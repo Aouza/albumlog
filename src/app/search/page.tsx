@@ -21,8 +21,7 @@ export default function SearchPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#eef33f]">Catalogo</p>
         <h1 className="mt-2 text-4xl font-semibold text-white">Busca de albuns</h1>
         <p className="mt-2 max-w-2xl text-white/52">
-          Esta tela esta pronta para a busca real no catalogo. Enquanto a integracao nao entra,
-          nenhum resultado fake sera exibido.
+          Pesquise dentro dos seus albuns salvos no Spotify. Nao exibimos resultados de exemplo.
         </p>
       </section>
 
@@ -45,11 +44,11 @@ export default function SearchPage() {
       {search.data?.length === 0 && (
         <EmptyState
           icon={Search}
-          title={query ? "Nenhum resultado disponivel ainda" : "A busca real ainda nao esta conectada"}
+          title={query ? "Nenhum album salvo encontrado" : "Pesquise seus albuns salvos"}
           description={
             query
-              ? "Removemos os dados de exemplo. Os resultados vao aparecer aqui quando a integracao com Spotify ou MusicBrainz estiver pronta."
-              : "Digite uma busca para validar o fluxo visual; a origem de dados real entra na proxima etapa."
+              ? "Nada nos seus albuns salvos corresponde a essa busca."
+              : "Entre com Spotify e autorize a biblioteca para pesquisar seus albuns salvos."
           }
         />
       )}

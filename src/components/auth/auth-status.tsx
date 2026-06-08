@@ -11,6 +11,7 @@ type AuthUser = {
   name: string;
   email: string;
   avatarUrl: string;
+  hasSpotifyLibraryScope?: boolean;
 };
 
 async function getMe() {
@@ -94,6 +95,11 @@ export function AuthStatus() {
             </p>
             <p className="mt-2 truncate text-sm font-semibold text-white">{user.name}</p>
             <p className="mt-1 truncate text-xs text-white/45">{user.email || "Email nao informado"}</p>
+            {!user.hasSpotifyLibraryScope && (
+              <p className="mt-3 rounded-xl border border-[#eef33f]/20 bg-[#eef33f]/10 p-2 text-xs leading-5 text-[#eef33f]">
+                Reconecte para liberar seus albuns salvos.
+              </p>
+            )}
           </div>
           <div className="p-2">
             <Link

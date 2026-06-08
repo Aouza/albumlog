@@ -15,20 +15,23 @@ This document is the source of truth for what AlbumLog currently implements.
 - Login page at `/login`.
 - Account menu in the app shell with profile and logout actions.
 - Profile page that shows the Spotify user when logged in.
+- Spotify saved albums endpoint at `/api/spotify/saved-albums`.
+- Library/search/dashboard data sourced from the user's saved Spotify albums.
+- Token refresh for Spotify API calls when the session has a refresh token.
 - Empty states for:
   - Dashboard activity.
-  - Album search.
-  - Library.
+  - Album search when there are no saved album matches.
+  - Library when Spotify has no saved albums or the user has not authorized library access.
   - Profile when logged out.
   - Favorites.
-- Album data layer that intentionally returns empty catalog/library states.
+- Album data layer backed by `/api/spotify/saved-albums`.
 
 ## Not Implemented Yet
 
-- Spotify album search/catalog integration.
+- Global Spotify album search/catalog integration beyond saved albums.
 - MusicBrainz fallback.
 - Database.
-- Persistent user album library.
+- Persistent AlbumLog user album library.
 - Add album to library.
 - Album status persistence.
 - Rating persistence.
@@ -47,10 +50,11 @@ This document is the source of truth for what AlbumLog currently implements.
 ## Current Data Behavior
 
 - Authentication data comes from Spotify after login.
-- Album catalog returns an empty list.
-- User library returns an empty list.
-- Dashboard stats return zero values.
-- Album detail returns `null` until a real catalog exists.
+- Saved albums come from Spotify's `/v1/me/albums` endpoint.
+- Search filters the user's saved Spotify albums.
+- Library shows saved Spotify albums as AlbumLog entries with default status `Quero ouvir`.
+- Dashboard stats are derived from the saved albums currently loaded.
+- Ratings, reviews, and AlbumLog-specific status are not persisted yet.
 
 The app should never show fake albums, fake reviews, fake ratings, or fake users.
 

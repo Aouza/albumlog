@@ -18,7 +18,7 @@ export default function LibraryPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#eef33f]">Colecao pessoal</p>
         <h1 className="mt-2 text-4xl font-semibold text-white">Biblioteca</h1>
         <p className="mt-2 max-w-2xl text-white/52">
-          Organize os albuns por status, nota e artista enquanto o historico ganha forma.
+          Seus albuns salvos no Spotify aparecem aqui como ponto de partida da biblioteca.
         </p>
       </section>
 
@@ -34,8 +34,8 @@ export default function LibraryPage() {
         <EmptyState
           icon={Library}
           title="Sua biblioteca ainda esta vazia"
-          description="Os dados de exemplo foram removidos. Quando voce adicionar albuns reais, eles aparecerao aqui com status, nota e review."
-          action={{ href: "/search", label: "Explorar busca" }}
+          description="Entre com Spotify ou reconecte sua conta para autorizar a leitura dos albuns salvos."
+          action={{ href: "/login", label: "Entrar com Spotify" }}
         />
       )}
     </div>

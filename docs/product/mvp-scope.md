@@ -2,8 +2,8 @@
 
 ## Build Now
 
-The current AlbumLog version is a frontend MVP with real Spotify login and no
-fake album/library records.
+The current AlbumLog version is a frontend MVP with real Spotify login and saved
+albums loaded from the user's Spotify library.
 
 It should prove the main product loop:
 
@@ -20,7 +20,7 @@ It should prove the main product loop:
 - TypeScript.
 - React Query.
 - Spotify OAuth.
-- Empty data layer for albums until catalog and persistence are connected.
+- Spotify saved albums as the first real album source.
 
 ## Screens
 
@@ -35,16 +35,16 @@ It should prove the main product loop:
 Current behavior:
 
 - Current user comes from Spotify login.
-- Album catalog starts empty.
-- User library starts empty.
+- Album catalog is limited to the user's saved Spotify albums.
+- User library is derived from saved Spotify albums.
 - Reviews start empty.
-- Dashboard stats start at zero.
+- Dashboard stats derive from saved Spotify albums.
 
 ## Not Included Yet
 
 - Google login.
 - Database.
-- Spotify album catalog/search API.
+- Global Spotify album catalog/search API beyond saved albums.
 - MusicBrainz API.
 - Friends.
 - Feed.
@@ -58,7 +58,8 @@ Current behavior:
 ## Acceptance Criteria
 
 - A user can log in with Spotify.
-- Empty states appear when catalog, library, favorites, or activity are empty.
-- The library can be filtered by status without fake records.
-- The dashboard reflects zero-state metrics.
+- A user can view saved Spotify albums after authorizing `user-library-read`.
+- Empty states appear when saved albums, favorites, or activity are empty.
+- The library can be filtered without fake records.
+- The dashboard reflects saved Spotify album metrics.
 - Documentation exists in `docs`.

@@ -13,5 +13,17 @@ export async function GET() {
 
   const user = await readSessionToken(token, secret);
 
-  return NextResponse.json({ user });
+  if (!user) {
+    return NextResponse.json({ user: null });
+  }
+
+  return NextResponse.json({
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      hasSpotifyLibraryScope: user.spotifyScope?.split(" ").includes("user-library-read") ?? false,
+    },
+  });
 }

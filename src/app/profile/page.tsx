@@ -14,6 +14,7 @@ type AuthUser = {
   name: string;
   email: string;
   avatarUrl: string;
+  hasSpotifyLibraryScope?: boolean;
 };
 
 async function getMe() {
@@ -89,6 +90,11 @@ function ProfileContent() {
             </div>
             <p className="mt-1 text-white/52">{profile.email || "Email nao informado pelo Spotify"}</p>
             <p className="mt-2 text-sm text-white/42">Perfil autenticado pelo Spotify</p>
+            {!profile.hasSpotifyLibraryScope && (
+              <p className="mt-3 rounded-xl border border-[#eef33f]/20 bg-[#eef33f]/10 p-3 text-sm text-[#eef33f]">
+                Reconecte com Spotify para autorizar a leitura dos seus albuns salvos.
+              </p>
+            )}
           </div>
         </div>
         </section>
@@ -131,7 +137,7 @@ function ProfileContent() {
           <EmptyState
             icon={Heart}
             title="Nenhum favorito ainda"
-            description="Favoritos reais vao aparecer aqui quando a biblioteca persistente estiver conectada."
+            description="Seus favoritos do AlbumLog vao aparecer aqui quando a persistencia de status estiver conectada."
           />
         )}
       </section>

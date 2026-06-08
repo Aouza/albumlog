@@ -42,6 +42,9 @@ describe("spotify auth helpers", () => {
       name: "Spotify User",
       email: "alison@example.com",
       avatarUrl: "https://example.com/avatar.jpg",
+      spotifyAccessToken: "access-token",
+      spotifyRefreshToken: "refresh-token",
+      spotifyTokenExpiresAt: 1893456000000,
     };
 
     const token = await createSessionToken(session, secret);

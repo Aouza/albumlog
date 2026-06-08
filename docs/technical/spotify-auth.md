@@ -34,3 +34,25 @@ AUTH_SESSION_SECRET=
 5. The callback exchanges the code for an access token.
 6. AlbumLog fetches the current Spotify profile from `/v1/me`.
 7. AlbumLog stores a compact signed session in an HTTP-only cookie.
+
+## Scopes
+
+AlbumLog currently requests:
+
+```text
+user-read-email user-read-private user-library-read
+```
+
+`user-library-read` is required to read saved albums from Spotify.
+
+Users who logged in before this scope was added must log out and reconnect.
+
+## Saved Albums
+
+The internal endpoint `/api/spotify/saved-albums` reads the current session and calls:
+
+```text
+GET https://api.spotify.com/v1/me/albums
+```
+
+It maps Spotify saved albums into AlbumLog `LibraryEntry` objects. These entries are not persisted in an AlbumLog database yet.

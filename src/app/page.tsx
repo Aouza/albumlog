@@ -76,8 +76,8 @@ export default function DashboardPage() {
               Proximo passo
             </div>
             <p className="mt-3 text-sm leading-6 text-white/68">
-              Sua conta ja pode entrar com Spotify. A biblioteca comeca vazia ate conectarmos busca
-              e persistencia reais.
+              A biblioteca agora le seus albuns salvos no Spotify. Reconecte se voce autorizou antes
+              da permissao de biblioteca ser adicionada.
             </p>
           </div>
         </div>
@@ -108,7 +108,7 @@ export default function DashboardPage() {
           <EmptyState
             icon={Library}
             title="Sua atividade ainda esta vazia"
-            description="Quando a busca real e a biblioteca persistente estiverem conectadas, os albuns adicionados vao aparecer aqui."
+            description="Seus albuns salvos no Spotify vao aparecer aqui depois do login com a permissao de biblioteca."
             action={{ href: "/search", label: "Ir para busca" }}
           />
         )}

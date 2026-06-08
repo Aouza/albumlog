@@ -33,7 +33,16 @@ export async function GET(request: NextRequest) {
       redirectUri,
     });
     const profile = await fetchSpotifyProfile(token.access_token);
-    const sessionToken = await createSessionToken(profile, sessionSecret);
+    const sessionToken = await createSessionToken(
+      {
+        ...profile,
+        spotifyAccessToken: token.access_token,
+        spotifyRefreshToken: token.refresh_token,
+        spotifyTokenExpiresAt: Date.now() + token.expires_in * 1000,
+        spotifyScope: token.scope,
+      },
+      sessionSecret,
+    );
 
     const response = NextResponse.redirect(new URL("/profile?login=spotify", appOrigin));
 

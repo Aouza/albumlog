@@ -5,6 +5,10 @@ export type SpotifySession = {
   name: string;
   email: string;
   avatarUrl: string;
+  spotifyAccessToken?: string;
+  spotifyRefreshToken?: string;
+  spotifyTokenExpiresAt?: number;
+  spotifyScope?: string;
 };
 
 export type OAuthState = {
@@ -27,7 +31,7 @@ type SpotifyProfileResponse = {
   images?: Array<{ url: string }>;
 };
 
-const spotifyScopes = ["user-read-email", "user-read-private"];
+const spotifyScopes = ["user-read-email", "user-read-private", "user-library-read"];
 
 function base64Url(buffer: Buffer) {
   return buffer.toString("base64url");
@@ -129,6 +133,34 @@ export async function exchangeCodeForToken({
 
   if (!response.ok) {
     throw new Error("Spotify token exchange failed");
+  }
+
+  return (await response.json()) as SpotifyTokenResponse;
+}
+
+export async function refreshSpotifyToken({
+  refreshToken,
+  clientId,
+  clientSecret,
+}: {
+  refreshToken: string;
+  clientId: string;
+  clientSecret: string;
+}) {
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Spotify token refresh failed");
   }
 
   return (await response.json()) as SpotifyTokenResponse;
