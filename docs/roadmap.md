@@ -2,13 +2,19 @@
 
 ## MVP
 
-- Mocked account/profile.
-- Album search.
+- Spotify login.
+- Empty states for dashboard, search, library, profile, and favorites.
+- Album data layer with no fake records.
+- Documentation for current architecture and Spotify auth.
+
+## Next MVP Milestone
+
+- Spotify album search.
 - Add album to library.
-- Album status.
-- Rating.
-- Review.
-- Library.
+- Persist album status.
+- Persist rating.
+- Persist review.
+- Library backed by real user data.
 
 ## v1.1
 
