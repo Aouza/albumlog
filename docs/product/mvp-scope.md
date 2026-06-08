@@ -2,7 +2,8 @@
 
 ## Build Now
 
-The first AlbumLog version is a frontend MVP with mocked data.
+The current AlbumLog version is a frontend MVP with real Spotify login and no
+fake album/library records.
 
 It should prove the main product loop:
 
@@ -18,7 +19,8 @@ It should prove the main product loop:
 - Next.js.
 - TypeScript.
 - React Query.
-- Mock data and mock API client functions.
+- Spotify OAuth.
+- Empty data layer for albums until catalog and persistence are connected.
 
 ## Screens
 
@@ -30,20 +32,19 @@ It should prove the main product loop:
 
 ## Data
 
-Use local mock data for:
+Current behavior:
 
-- Current user.
-- Album catalog.
-- User library entries.
-- Reviews.
-- Dashboard stats.
+- Current user comes from Spotify login.
+- Album catalog starts empty.
+- User library starts empty.
+- Reviews start empty.
+- Dashboard stats start at zero.
 
 ## Not Included Yet
 
-- Real auth.
 - Google login.
 - Database.
-- Spotify API.
+- Spotify album catalog/search API.
 - MusicBrainz API.
 - Friends.
 - Feed.
@@ -56,10 +57,8 @@ Use local mock data for:
 
 ## Acceptance Criteria
 
-- A user can search for an album by title or artist.
-- A user can add or update an album status.
-- A user can assign ratings from `0.5` to `5.0`.
-- A user can write and view a review.
-- The library can be filtered by status.
-- The dashboard reflects mocked library state.
+- A user can log in with Spotify.
+- Empty states appear when catalog, library, favorites, or activity are empty.
+- The library can be filtered by status without fake records.
+- The dashboard reflects zero-state metrics.
 - Documentation exists in `docs`.

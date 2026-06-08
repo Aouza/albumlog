@@ -4,6 +4,7 @@ import { Activity, Headphones, Library, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { AlbumCard } from "@/components/album/album-card";
 import { StatsStrip } from "@/components/stats/stats-strip";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useDashboardStats, useLibrary } from "@/lib/queries/albums";
 
 export default function DashboardPage() {
@@ -66,17 +67,17 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center justify-between text-white/52">
               <span>Fonte atual</span>
-              <strong className="text-white">Mocks</strong>
+              <strong className="text-white">Spotify</strong>
             </div>
           </div>
           <div className="mt-5 rounded-2xl border border-[#4f5bff]/20 bg-[#4f5bff]/10 p-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#eef33f]">
               <Sparkles size={16} />
-              Insight
+              Proximo passo
             </div>
             <p className="mt-3 text-sm leading-6 text-white/68">
-              Thornhill domina sua fila recente. Um bom proximo passo e alternar com jazz para
-              variar textura e dinamica.
+              Sua conta ja pode entrar com Spotify. A biblioteca comeca vazia ate conectarmos busca
+              e persistencia reais.
             </p>
           </div>
         </div>
@@ -97,11 +98,20 @@ export default function DashboardPage() {
             Abrir biblioteca
           </Link>
         </div>
-        <div className="grid gap-3 lg:grid-cols-3">
-          {recentEntries.map((entry) => (
-            <AlbumCard key={entry.userAlbum.id} album={entry.album} userAlbum={entry.userAlbum} compact />
-          ))}
-        </div>
+        {recentEntries.length > 0 ? (
+          <div className="grid gap-3 lg:grid-cols-3">
+            {recentEntries.map((entry) => (
+              <AlbumCard key={entry.userAlbum.id} album={entry.album} userAlbum={entry.userAlbum} compact />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon={Library}
+            title="Sua atividade ainda esta vazia"
+            description="Quando a busca real e a biblioteca persistente estiverem conectadas, os albuns adicionados vao aparecer aqui."
+            action={{ href: "/search", label: "Ir para busca" }}
+          />
+        )}
       </section>
     </div>
   );

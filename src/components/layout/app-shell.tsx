@@ -4,6 +4,7 @@ import { Disc3, Home, Library, Search, Sparkles, UserCircle } from "lucide-react
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { AuthStatus } from "@/components/auth/auth-status";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -91,6 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Search size={17} />
             Tap / to search your catalog
           </div>
+          <AuthStatus />
         </div>
       </header>
       <main className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:pl-[148px] lg:pr-8 lg:pt-8">

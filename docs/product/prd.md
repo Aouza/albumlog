@@ -67,9 +67,9 @@ Pain: lacks a simple social network focused on albums.
 
 ### Account and Login
 
-Planned for the product MVP, but mocked in the first frontend scaffold.
+Spotify login is implemented for the current frontend MVP.
 
-Criteria:
+Future account criteria:
 
 - Email and password.
 - Google login.
@@ -82,13 +82,10 @@ User searches by:
 - Album name.
 - Artist name.
 
-Example artist: Thornhill.
+Example future search:
 
-Example results:
-
-- The Dark Pool.
-- Heroine.
-- Bodies.
+- Album title.
+- Artist name.
 
 ### Add to Library
 
@@ -111,7 +108,7 @@ Scale from `0.5` to `5.0` in half-star increments.
 
 ### Review
 
-Free text field.
+Free text field once library persistence is connected.
 
 Example: `Excelente producao. Atmosfera pesada e emocional.`
 
@@ -126,7 +123,7 @@ View all albums organized by:
 
 ## Main Flow
 
-1. User searches for `The Dark Pool`.
+1. User searches for an album.
 2. User adds the album.
 3. User marks it as `Quero Ouvir`.
 4. User listens to the album.

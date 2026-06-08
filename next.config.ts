@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1"],
   experimental: {
     cpus: 1,
     staticGenerationMaxConcurrency: 1,
@@ -11,6 +12,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.scdn.co",
       },
     ],
   },

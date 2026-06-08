@@ -48,7 +48,9 @@ export function ReviewEditor({
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-sm text-white/45">
-          {updateAlbum.isSuccess ? "Entrada salva nesta sessao." : "Dados mockados, sem persistencia apos refresh."}
+          {updateAlbum.isSuccess
+            ? "Entrada salva nesta sessao."
+            : "Edicao indisponivel ate a biblioteca persistente ser conectada."}
         </p>
         <button
           type="button"

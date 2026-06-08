@@ -8,7 +8,7 @@ import {
   getLibrary,
   searchAlbums,
   updateUserAlbum,
-} from "@/lib/mock-api/albums";
+} from "@/lib/data/albums";
 
 export const albumKeys = {
   all: ["albums"] as const,

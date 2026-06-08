@@ -6,12 +6,13 @@
 - React.
 - TypeScript.
 - React Query.
-- Local mock data for the first scaffold.
+- Spotify OAuth for authentication.
+- Empty album data layer until catalog and persistence integrations are added.
 
 ## Architecture Principles
 
-- Keep UI components independent from raw mock arrays.
-- Treat mock functions as an API boundary.
+- Keep UI components independent from data source details.
+- Treat data functions as an API boundary.
 - Keep product entities typed.
 - Make future backend replacement straightforward.
 
@@ -35,7 +36,9 @@ albumlog/
       stats/
       ui/
     lib/
-      mock-api/
+      auth/
+      data/
+      queries/
       query-client.tsx
       utils.ts
     types/
@@ -47,14 +50,14 @@ albumlog/
 
 1. Page component renders the route.
 2. Client component calls a React Query hook.
-3. Hook calls a mock API function.
-4. Mock API reads or updates local mock state.
-5. Mutation invalidates related queries.
-6. UI rerenders with the updated result.
+3. Hook calls the current data function.
+4. The current album data functions return empty catalog/library states.
+5. UI renders empty states instead of placeholder data.
+6. Future mutations will invalidate related queries once persistence exists.
 
 ## Future Backend Path
 
-The mock API layer can later be replaced with:
+The data layer can later be connected to:
 
 - Next.js route handlers.
 - Server actions.
@@ -77,7 +80,8 @@ MusicBrainz can be used as fallback for catalog completeness.
 
 ## Auth Path
 
-The frontend MVP uses a mocked current user.
+The app uses Spotify OAuth for login. The current user is read from `/api/auth/me`
+using a signed HTTP-only session cookie.
 
 Future auth options:
 

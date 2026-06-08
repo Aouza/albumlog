@@ -1,8 +1,10 @@
 "use client";
 
+import { Library } from "lucide-react";
 import { useState } from "react";
 import { AlbumCard } from "@/components/album/album-card";
 import { LibraryFilters } from "@/components/library/library-filters";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useLibrary } from "@/lib/queries/albums";
 import type { LibraryFilters as LibraryFiltersType } from "@/types/album";
 
@@ -29,10 +31,12 @@ export default function LibraryPage() {
       </div>
 
       {library.data?.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-white/20 bg-[#0b0b16]/80 p-8 text-center">
-          <h2 className="font-semibold text-white">Sua biblioteca esta vazia para esse filtro</h2>
-          <p className="mt-2 text-sm text-white/48">Mude o status ou busque outro artista.</p>
-        </div>
+        <EmptyState
+          icon={Library}
+          title="Sua biblioteca ainda esta vazia"
+          description="Os dados de exemplo foram removidos. Quando voce adicionar albuns reais, eles aparecerao aqui com status, nota e review."
+          action={{ href: "/search", label: "Explorar busca" }}
+        />
       )}
     </div>
   );
