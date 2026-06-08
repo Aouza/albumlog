@@ -1,65 +1,108 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Activity, Headphones, Library, Search, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { AlbumCard } from "@/components/album/album-card";
+import { StatsStrip } from "@/components/stats/stats-strip";
+import { useDashboardStats, useLibrary } from "@/lib/queries/albums";
+
+export default function DashboardPage() {
+  const stats = useDashboardStats();
+  const library = useLibrary({ status: "all", query: "" });
+  const recentEntries = library.data?.slice(0, 3) ?? [];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="space-y-6">
+      <section className="grid gap-5 xl:grid-cols-[1fr_390px]">
+        <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0b16]/88 p-7 text-white shadow-[0_24px_90px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#7c86ff] to-transparent" />
+          <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#4f5bff]/16 to-transparent" />
+          <p className="relative text-sm font-semibold uppercase tracking-[0.18em] text-[#eef33f]">
+            Diario musical
           </p>
+          <h1 className="relative mt-3 max-w-2xl text-4xl font-semibold tracking-normal md:text-6xl">
+            Construa sua memoria de albuns.
+          </h1>
+          <p className="relative mt-4 max-w-2xl text-base leading-7 text-white/62">
+            Busque, salve, avalie e revise discos completos em uma biblioteca feita para quem
+            realmente acompanha a propria jornada musical.
+          </p>
+          <div className="relative mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/search"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#4f5bff] px-4 text-sm font-semibold text-white shadow-[0_0_34px_rgba(79,91,255,0.44)] transition hover:bg-[#6570ff]"
+            >
+              <Search size={17} />
+              Buscar albuns
+            </Link>
+            <Link
+              href="/library"
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              <Library size={17} />
+              Ver biblioteca
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="rounded-[28px] border border-white/10 bg-[#0b0b16]/88 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <div className="flex items-center gap-3">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-[#4f5bff]/16 text-[#7c86ff]">
+              <Headphones size={21} />
+            </span>
+            <div>
+              <h2 className="font-semibold text-white">Agora no radar</h2>
+              <p className="text-sm text-white/48">Seu proximo album esta a uma busca.</p>
+            </div>
+          </div>
+          <div className="mt-5 space-y-3 text-sm">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3 text-white/52">
+              <span>Primeiro album em menos de</span>
+              <strong className="text-white">1 min</strong>
+            </div>
+            <div className="flex items-center justify-between border-b border-white/10 pb-3 text-white/52">
+              <span>Status principais</span>
+              <strong className="text-white">6</strong>
+            </div>
+            <div className="flex items-center justify-between text-white/52">
+              <span>Fonte atual</span>
+              <strong className="text-white">Mocks</strong>
+            </div>
+          </div>
+          <div className="mt-5 rounded-2xl border border-[#4f5bff]/20 bg-[#4f5bff]/10 p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#eef33f]">
+              <Sparkles size={16} />
+              Insight
+            </div>
+            <p className="mt-3 text-sm leading-6 text-white/68">
+              Thornhill domina sua fila recente. Um bom proximo passo e alternar com jazz para
+              variar textura e dinamica.
+            </p>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {stats.data && <StatsStrip stats={stats.data} />}
+
+      <section>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-[#eef33f]">
+              <Activity size={18} />
+              <h2 className="text-xl font-semibold text-white">Atividade recente</h2>
+            </div>
+            <p className="text-sm text-white/45">Os ultimos movimentos da sua biblioteca.</p>
+          </div>
+          <Link href="/library" className="text-sm font-semibold text-[#8f97ff] hover:underline">
+            Abrir biblioteca
+          </Link>
+        </div>
+        <div className="grid gap-3 lg:grid-cols-3">
+          {recentEntries.map((entry) => (
+            <AlbumCard key={entry.userAlbum.id} album={entry.album} userAlbum={entry.userAlbum} compact />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
