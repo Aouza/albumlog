@@ -9,17 +9,21 @@
 
 ## Next MVP Milestone
 
-- Spotify album search.
-- Add album to library.
+- Database-backed user model.
+- Spotify saved-album import into AlbumLog-owned tables.
+- Manual Spotify library sync.
+- Library backed by persisted user data.
 - Persist album status.
 - Persist rating.
 - Persist review.
-- Library backed by real user data.
+- Add album to library from Discover.
 
 ## v1.1
 
 - Public profile.
 - Follow users.
+- Albums in common with friends.
+- Friend-to-friend album recommendations.
 - Activity feed.
 - Review likes.
 
