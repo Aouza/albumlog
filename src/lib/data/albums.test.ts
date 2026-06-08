@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getAlbumDetail, getDashboardStats, getLibrary, searchAlbums } from "./albums";
+import { getAlbumDetail, getDashboardStats, getLibrary, searchAlbums, searchCatalogAlbums } from "./albums";
 
 describe("empty album data layer", () => {
   afterEach(() => {
@@ -43,5 +43,28 @@ describe("empty album data layer", () => {
       estimatedHours: 0,
       averageRating: 0,
     });
+  });
+
+  it("searches the Spotify catalog through the AlbumLog API", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        albums: [
+          {
+            id: "catalog-album",
+            spotifyId: "catalog-album",
+            title: "Heroine",
+            artist: "Thornhill",
+            coverUrl: "",
+            releaseDate: "2022-06-03",
+            genres: [],
+            externalUrl: "",
+          },
+        ],
+      }),
+    );
+
+    await expect(searchCatalogAlbums("Heroine")).resolves.toMatchObject([
+      { id: "catalog-album", title: "Heroine" },
+    ]);
   });
 });

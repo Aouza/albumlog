@@ -43,6 +43,28 @@ export async function searchAlbums(_query: string): Promise<Album[]> {
   return library.filter((entry) => matchesQuery(entry, _query)).map((entry) => entry.album);
 }
 
+export async function searchCatalogAlbums(query: string): Promise<Album[]> {
+  const normalizedQuery = query.trim();
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const response = await fetch(`/api/spotify/search-albums?q=${encodeURIComponent(normalizedQuery)}`);
+
+  if (response.status === 401) {
+    return [];
+  }
+
+  if (!response.ok) {
+    throw new Error("Unable to search Spotify albums");
+  }
+
+  const payload = (await response.json()) as { albums: Album[] };
+
+  return payload.albums;
+}
+
 export async function getLibrary(
   _filters: LibraryFilters = { status: "all", query: "" },
 ): Promise<LibraryEntry[]> {

@@ -6,11 +6,18 @@ import { AlbumCard } from "@/components/album/album-card";
 import { LibraryFilters } from "@/components/library/library-filters";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useLibrary } from "@/lib/queries/albums";
+import { getLibraryEmptyStateCopy } from "@/lib/ui/album-empty-states";
 import type { LibraryFilters as LibraryFiltersType } from "@/types/album";
 
 export default function LibraryPage() {
   const [filters, setFilters] = useState<LibraryFiltersType>({ status: "all", query: "" });
   const library = useLibrary(filters);
+  const fullLibrary = useLibrary({ status: "all", query: "" });
+  const hasActiveFilters = filters.status !== "all" || Boolean(filters.query.trim());
+  const emptyStateCopy = getLibraryEmptyStateCopy({
+    hasAnySavedAlbums: Boolean(fullLibrary.data?.length),
+    hasActiveFilters,
+  });
 
   return (
     <div className="space-y-5">
@@ -25,17 +32,22 @@ export default function LibraryPage() {
       <LibraryFilters filters={filters} onChange={setFilters} />
 
       <div className="grid gap-3 lg:grid-cols-2">
-        {library.data?.map((entry) => (
-          <AlbumCard key={entry.userAlbum.id} album={entry.album} userAlbum={entry.userAlbum} />
+        {library.data?.map((entry, index) => (
+          <AlbumCard
+            key={entry.userAlbum.id}
+            album={entry.album}
+            userAlbum={entry.userAlbum}
+            priorityCover={index === 0}
+          />
         ))}
       </div>
 
       {library.data?.length === 0 && (
         <EmptyState
           icon={Library}
-          title="Sua biblioteca ainda esta vazia"
-          description="Entre com Spotify ou reconecte sua conta para autorizar a leitura dos albuns salvos."
-          action={{ href: "/login", label: "Entrar com Spotify" }}
+          title={emptyStateCopy.title}
+          description={emptyStateCopy.description}
+          action={emptyStateCopy.action}
         />
       )}
     </div>

@@ -13,7 +13,6 @@ Phase 1 implements:
 - Navigation label change from `Busca` to `Descobrir`.
 - Route direction centered on `/discover`.
 - A global Spotify album search area.
-- Horizontal discovery sections.
 - A friend recommendations section with an empty state, not a fake social feed.
 
 Phase 1 does not implement:
@@ -49,7 +48,6 @@ The page uses horizontal album sections because this makes discovery feel differ
 Initial sections:
 
 - `Resultados da busca`, visible when a query has results.
-- `Da sua biblioteca Spotify`, showing recently saved albums or a curated subset from the user's saved library.
 - `Recomendacoes de amigos`, showing a truthful empty state until social features exist.
 
 ### Friend Recommendations Empty State
@@ -89,7 +87,7 @@ Add a Spotify catalog-search boundary separate from the saved-library boundary:
 - `src/app/discover/page.tsx`
   - Replaces the search experience with discovery sections.
 
-The old `/search` route may redirect to `/discover` to avoid breaking navigation during development.
+The old `/search` route is removed so `Descobrir` has a single canonical URL at `/discover`.
 
 ## UI Direction
 

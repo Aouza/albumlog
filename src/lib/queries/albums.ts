@@ -7,12 +7,14 @@ import {
   getDashboardStats,
   getLibrary,
   searchAlbums,
+  searchCatalogAlbums,
   updateUserAlbum,
 } from "@/lib/data/albums";
 
 export const albumKeys = {
   all: ["albums"] as const,
   search: (query: string) => [...albumKeys.all, "search", query] as const,
+  catalogSearch: (query: string) => [...albumKeys.all, "catalog-search", query] as const,
   library: (filters: LibraryFilters) => [...albumKeys.all, "library", filters] as const,
   detail: (id: string) => [...albumKeys.all, "detail", id] as const,
   stats: () => [...albumKeys.all, "stats"] as const,
@@ -22,6 +24,13 @@ export function useAlbumsSearch(query: string) {
   return useQuery({
     queryKey: albumKeys.search(query),
     queryFn: () => searchAlbums(query),
+  });
+}
+
+export function useCatalogAlbumSearch(query: string) {
+  return useQuery({
+    queryKey: albumKeys.catalogSearch(query),
+    queryFn: () => searchCatalogAlbums(query),
   });
 }
 

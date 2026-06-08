@@ -56,3 +56,13 @@ GET https://api.spotify.com/v1/me/albums
 ```
 
 It maps Spotify saved albums into AlbumLog `LibraryEntry` objects. These entries are not persisted in an AlbumLog database yet.
+
+## Catalog Search
+
+The internal endpoint `/api/spotify/search-albums` reads the current session and calls:
+
+```text
+GET https://api.spotify.com/v1/search?q={query}&type=album
+```
+
+It maps Spotify album results into AlbumLog `Album` objects for the Discover page. Search results are not persisted in an AlbumLog database yet.

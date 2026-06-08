@@ -30,11 +30,11 @@ export default function DashboardPage() {
           </p>
           <div className="relative mt-6 flex flex-wrap gap-3">
             <Link
-              href="/search"
+              href="/discover"
               className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#4f5bff] px-4 text-sm font-semibold text-white shadow-[0_0_34px_rgba(79,91,255,0.44)] transition hover:bg-[#6570ff]"
             >
               <Search size={17} />
-              Buscar albuns
+              Descobrir albuns
             </Link>
             <Link
               href="/library"
@@ -100,8 +100,14 @@ export default function DashboardPage() {
         </div>
         {recentEntries.length > 0 ? (
           <div className="grid gap-3 lg:grid-cols-3">
-            {recentEntries.map((entry) => (
-              <AlbumCard key={entry.userAlbum.id} album={entry.album} userAlbum={entry.userAlbum} compact />
+            {recentEntries.map((entry, index) => (
+              <AlbumCard
+                key={entry.userAlbum.id}
+                album={entry.album}
+                userAlbum={entry.userAlbum}
+                compact
+                priorityCover={index === 0}
+              />
             ))}
           </div>
         ) : (
@@ -109,7 +115,7 @@ export default function DashboardPage() {
             icon={Library}
             title="Sua atividade ainda esta vazia"
             description="Seus albuns salvos no Spotify vao aparecer aqui depois do login com a permissao de biblioteca."
-            action={{ href: "/search", label: "Ir para busca" }}
+            action={{ href: "/discover", label: "Ir para descobrir" }}
           />
         )}
       </section>

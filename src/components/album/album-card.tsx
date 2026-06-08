@@ -13,10 +13,14 @@ export function AlbumCard({
   album,
   userAlbum,
   compact = false,
+  priorityCover = false,
+  libraryAction = "enabled",
 }: {
   album: Album;
   userAlbum?: UserAlbum | null;
   compact?: boolean;
+  priorityCover?: boolean;
+  libraryAction?: "enabled" | "preview";
 }) {
   const updateAlbum = useUpdateUserAlbum();
   const currentStatus: AlbumStatus = userAlbum?.status ?? "want_to_listen";
@@ -33,7 +37,7 @@ export function AlbumCard({
   return (
     <article className="group grid grid-cols-[104px_1fr] gap-4 rounded-2xl border border-white/10 bg-[#0b0b16]/86 p-3 shadow-[0_18px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition hover:border-[#4f5bff]/45 hover:shadow-[0_22px_70px_rgba(44,68,255,0.22)]">
       <Link href={`/albums/${album.id}`} aria-label={`Abrir ${album.title}`}>
-        <AlbumCover album={album} />
+        <AlbumCover album={album} priority={priorityCover} />
       </Link>
       <div className="min-w-0">
         <div className="flex items-start justify-between gap-3">
@@ -68,7 +72,12 @@ export function AlbumCard({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          {userAlbum ? (
+          {libraryAction === "preview" ? (
+            <span className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-white/58">
+              <Plus size={16} />
+              {userAlbum ? "Na biblioteca" : "Adicionar em breve"}
+            </span>
+          ) : userAlbum ? (
             <StatusSelect
               value={currentStatus}
               onChange={handleStatusChange}

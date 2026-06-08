@@ -20,8 +20,8 @@ export default function AlbumDetailPage() {
     return (
       <div className="rounded-2xl border border-white/10 bg-[#0b0b16]/86 p-6">
         <h1 className="text-xl font-semibold text-white">Album nao encontrado</h1>
-        <Link href="/search" className="mt-3 inline-block text-sm font-semibold text-[#8f97ff] hover:underline">
-          Voltar para busca
+        <Link href="/discover" className="mt-3 inline-block text-sm font-semibold text-[#8f97ff] hover:underline">
+          Voltar para descobrir
         </Link>
       </div>
     );
@@ -32,7 +32,7 @@ export default function AlbumDetailPage() {
   return (
     <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
       <section className="space-y-4">
-        <AlbumCover album={album} className="shadow-[0_24px_90px_rgba(0,0,0,0.45)]" />
+        <AlbumCover album={album} className="shadow-[0_24px_90px_rgba(0,0,0,0.45)]" priority />
         <div className="rounded-2xl border border-white/10 bg-[#0b0b16]/86 p-4 shadow-[0_18px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl">
           <h1 className="text-3xl font-semibold text-white">{album.title}</h1>
           <p className="mt-2 text-lg text-white/55">{album.artist}</p>

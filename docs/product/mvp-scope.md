@@ -2,17 +2,15 @@
 
 ## Build Now
 
-The current AlbumLog version is a frontend MVP with real Spotify login and saved
-albums loaded from the user's Spotify library.
+The current AlbumLog version is a frontend MVP with real Spotify login, Spotify
+catalog discovery, and saved albums loaded from the user's Spotify library.
 
 It should prove the main product loop:
 
-1. Search albums.
-2. Add an album to the library.
-3. Set listening status.
-4. Rate the album.
-5. Write a review.
-6. See the album in the personal library.
+1. Discover albums through Spotify catalog search.
+2. View saved Spotify albums in the library.
+3. Filter the personal library.
+4. Prepare for future add/status/rating/review persistence.
 
 ## Technology
 
@@ -21,11 +19,12 @@ It should prove the main product loop:
 - React Query.
 - Spotify OAuth.
 - Spotify saved albums as the first real album source.
+- Spotify Search API for discovery.
 
 ## Screens
 
 - Dashboard.
-- Search.
+- Discover.
 - Library.
 - Album detail.
 - Basic profile.
@@ -35,7 +34,7 @@ It should prove the main product loop:
 Current behavior:
 
 - Current user comes from Spotify login.
-- Album catalog is limited to the user's saved Spotify albums.
+- Discover catalog search uses Spotify album results and does not list the user's saved library.
 - User library is derived from saved Spotify albums.
 - Reviews start empty.
 - Dashboard stats derive from saved Spotify albums.
@@ -44,7 +43,6 @@ Current behavior:
 
 - Google login.
 - Database.
-- Global Spotify album catalog/search API beyond saved albums.
 - MusicBrainz API.
 - Friends.
 - Feed.
@@ -58,8 +56,10 @@ Current behavior:
 ## Acceptance Criteria
 
 - A user can log in with Spotify.
+- A user can search Spotify album catalog from Discover.
 - A user can view saved Spotify albums after authorizing `user-library-read`.
 - Empty states appear when saved albums, favorites, or activity are empty.
+- Friend recommendations show a truthful empty state until social features exist.
 - The library can be filtered without fake records.
 - The dashboard reflects saved Spotify album metrics.
 - Documentation exists in `docs`.

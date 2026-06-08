@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
-      <body className="min-h-full">
+      <body className="min-h-full" suppressHydrationWarning>
         <QueryProvider>
           <AppShell>{children}</AppShell>
         </QueryProvider>

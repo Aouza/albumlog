@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Inicio", icon: Home },
-  { href: "/search", label: "Busca", icon: Search },
+  { href: "/discover", label: "Descobrir", icon: Search },
   { href: "/library", label: "Biblioteca", icon: Library },
   { href: "/profile", label: "Perfil", icon: UserCircle },
 ];
@@ -90,7 +90,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           <div className="hidden h-11 min-w-[320px] items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white/42 md:flex">
             <Search size={17} />
-            Tap / to search your catalog
+            Explore albuns e recomendacoes
           </div>
           <AuthStatus />
         </div>
