@@ -68,3 +68,24 @@ export async function getPersistedLibraryForSpotifyUser(
     mapPersistedUserAlbumToLibraryEntry(user.id, userAlbum),
   );
 }
+
+export async function markMissingSpotifyLibraryEntriesAsRemoved(
+  userId: string,
+  currentSpotifyAlbumIds: Set<string>,
+) {
+  const result = await prisma.userAlbum.updateMany({
+    where: {
+      userId,
+      source: "spotify",
+      removedFromSpotify: false,
+      album: {
+        spotifyAlbumId: {
+          notIn: Array.from(currentSpotifyAlbumIds),
+        },
+      },
+    },
+    data: { removedFromSpotify: true },
+  });
+
+  return result.count;
+}

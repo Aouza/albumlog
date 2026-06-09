@@ -11,6 +11,7 @@ type SyncDependencies = {
   accessToken: string;
   fetchSavedAlbums?: (accessToken: string) => Promise<LibraryEntry[]>;
   upsertEntry?: (userId: string, entry: LibraryEntry) => Promise<void>;
+  markRemovedEntries?: (userId: string, currentSpotifyAlbumIds: Set<string>) => Promise<number>;
   createSyncRecord?: () => Promise<string>;
   finishSyncRecord?: (syncId: string, summary: SyncSummary) => Promise<void>;
   failSyncRecord?: (syncId: string, error: Error) => Promise<void>;
@@ -28,6 +29,13 @@ export async function syncSpotifyLibrary({
     const { upsertSyncedLibraryEntry } = await import("@/lib/repositories/library-repository");
 
     return upsertSyncedLibraryEntry(nextUserId, entry);
+  },
+  markRemovedEntries = async (nextUserId, currentSpotifyAlbumIds) => {
+    const { markMissingSpotifyLibraryEntriesAsRemoved } = await import(
+      "@/lib/repositories/library-repository"
+    );
+
+    return markMissingSpotifyLibraryEntriesAsRemoved(nextUserId, currentSpotifyAlbumIds);
   },
   createSyncRecord = async () => {
     const { prisma } = await import("@/lib/db/prisma");
@@ -71,10 +79,13 @@ export async function syncSpotifyLibrary({
       await upsertEntry(userId, entry);
     }
 
+    const currentSpotifyAlbumIds = new Set(albums.map((entry) => entry.album.spotifyId));
+    const totalMarkedRemoved = await markRemovedEntries(userId, currentSpotifyAlbumIds);
+
     const summary = {
       totalImported: albums.length,
       totalUpdated: 0,
-      totalMarkedRemoved: 0,
+      totalMarkedRemoved,
     };
 
     await finishSyncRecord(syncId, summary);

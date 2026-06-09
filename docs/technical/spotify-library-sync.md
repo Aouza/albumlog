@@ -45,14 +45,18 @@ Implemented:
 - encrypted Spotify token storage.
 - Spotify account persistence after OAuth callback.
 - manual `/api/spotify/sync` endpoint.
+- `/api/spotify/sync/status` endpoint for the latest sync run.
 - Library button for `Atualizar Spotify`.
+- Library sync status summary with latest run time, imported count, and removed count.
 - `/api/spotify/saved-albums` reads persisted library rows first and falls back to live Spotify data for unsynced users.
+- manual full sync reconciliation for Spotify-sourced albums removed from the user's saved Spotify albums.
+- safe sync error responses for the client, with server-side logging for investigation.
+- Prisma config loads `.env.local` for local development and prefers `DIRECT_URL` for CLI database operations.
 
 Not implemented yet:
 
 - automatic six-hour sync;
 - scheduled background sync;
-- removal reconciliation;
 - friends and recommendations.
 
 ## Recommended Data Model
@@ -220,6 +224,12 @@ Behavior:
 
 For MVP, the button can trigger a foreground sync for the current user. Later, this should move to a background job.
 
+Current implementation:
+
+- `POST /api/spotify/sync` runs a foreground manual full sync for the logged-in user.
+- `GET /api/spotify/sync/status` returns the latest sync run for the logged-in user.
+- The Library page displays the latest finished sync time, imported count, removed count, and a safe failure message.
+
 ## Full Sync and Removals
 
 Incremental sync is good at detecting additions. It is not enough for removals.
@@ -236,7 +246,13 @@ removed_from_spotify = true
 
 Do not delete immediately. AlbumLog is a diary, so removing something from Spotify should not erase ratings, reviews, listening history, or recommendations.
 
-Recommended MVP behavior:
+Current MVP behavior:
+
+- user can run manual full sync from the Library page;
+- manual full sync marks missing Spotify-sourced albums as `removed_from_spotify = true`;
+- removed albums are hidden from the default Library view but retained in AlbumLog history;
+
+Recommended later behavior:
 
 - run initial full sync on first connection;
 - run manual full sync from the Library page;

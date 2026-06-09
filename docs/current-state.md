@@ -20,10 +20,13 @@ This document is the source of truth for what AlbumLog currently implements.
 - Spotify saved albums endpoint at `/api/spotify/saved-albums`.
 - Spotify catalog search endpoint at `/api/spotify/search-albums`.
 - Manual Spotify library sync endpoint at `/api/spotify/sync`.
+- Spotify library sync status endpoint at `/api/spotify/sync/status`.
 - Discover page at `/discover` with Spotify catalog search and friend recommendations empty state.
 - Library/dashboard data sourced from AlbumLog persisted Spotify imports when available, with live Spotify fallback for unsynced users.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
+- Manual Spotify sync marks Spotify-sourced albums as removed when they no longer appear in the user's saved Spotify albums.
+- Library page shows the latest Spotify sync status, imported count, removed count, and safe sync errors.
 - Token refresh for Spotify API calls when the session has a refresh token.
 - Empty states for:
   - Dashboard activity.
@@ -58,7 +61,7 @@ This document is the source of truth for what AlbumLog currently implements.
 - Authentication data comes from Spotify after login.
 - Spotify account records are persisted in Supabase Postgres after login.
 - Saved albums come from Spotify's `/v1/me/albums` endpoint.
-- Manual sync imports saved Spotify albums into AlbumLog tables.
+- Manual sync imports saved Spotify albums into AlbumLog tables and marks missing Spotify-sourced rows as `removedFromSpotify`.
 - Discover catalog search uses Spotify's `/v1/search` endpoint for album results.
 - Library reads persisted AlbumLog entries when sync data exists, otherwise falls back to live saved Spotify albums.
 - Dashboard stats are derived from the saved albums currently loaded.

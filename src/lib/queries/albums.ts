@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LibraryFilters, UpdateUserAlbumInput } from "@/types/album";
+import type { SpotifySyncStatus } from "@/lib/sync/spotify-sync-status";
 import {
   getAlbumDetail,
   getDashboardStats,
@@ -18,6 +19,7 @@ export const albumKeys = {
   library: (filters: LibraryFilters) => [...albumKeys.all, "library", filters] as const,
   detail: (id: string) => [...albumKeys.all, "detail", id] as const,
   stats: () => [...albumKeys.all, "stats"] as const,
+  syncStatus: () => [...albumKeys.all, "sync-status"] as const,
 };
 
 export function useAlbumsSearch(query: string) {
@@ -55,6 +57,21 @@ export function useDashboardStats() {
   });
 }
 
+export function useSpotifySyncStatus() {
+  return useQuery({
+    queryKey: albumKeys.syncStatus(),
+    queryFn: async () => {
+      const response = await fetch("/api/spotify/sync/status");
+
+      if (!response.ok) {
+        throw new Error("Unable to load Spotify sync status");
+      }
+
+      return (await response.json()) as { sync: SpotifySyncStatus | null };
+    },
+  });
+}
+
 export function useUpdateUserAlbum() {
   const queryClient = useQueryClient();
 
@@ -77,7 +94,9 @@ export function useSyncSpotifyLibrary() {
       const response = await fetch("/api/spotify/sync", { method: "POST" });
 
       if (!response.ok) {
-        throw new Error("Unable to sync Spotify library");
+        const body = (await response.json().catch(() => null)) as { message?: string } | null;
+
+        throw new Error(body?.message ?? "Nao foi possivel atualizar sua biblioteca Spotify agora.");
       }
 
       return (await response.json()) as {
@@ -85,7 +104,10 @@ export function useSyncSpotifyLibrary() {
       };
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: albumKeys.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: albumKeys.all }),
+        queryClient.invalidateQueries({ queryKey: albumKeys.syncStatus() }),
+      ]);
     },
   });
 }

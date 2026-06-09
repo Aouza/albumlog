@@ -7,6 +7,7 @@ import {
   refreshSpotifyToken,
 } from "@/lib/auth/spotify";
 import { prisma } from "@/lib/db/prisma";
+import { getSpotifySyncErrorResponse } from "@/lib/sync/spotify-sync-errors";
 import { syncSpotifyLibrary } from "@/lib/sync/spotify-library-sync";
 
 export async function POST() {
@@ -44,10 +45,24 @@ export async function POST() {
     };
   }
 
-  const summary = await syncSpotifyLibrary({
-    userId: user.id,
-    accessToken,
-  });
+  let summary;
+
+  try {
+    summary = await syncSpotifyLibrary({
+      userId: user.id,
+      accessToken,
+    });
+  } catch (error) {
+    console.error("[spotify-sync] manual sync failed", {
+      userId: user.id,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+
+    const safeError = getSpotifySyncErrorResponse();
+
+    return NextResponse.json(safeError.body, { status: safeError.status });
+  }
+
   const response = NextResponse.json({ summary });
 
   if (nextSession !== session) {
