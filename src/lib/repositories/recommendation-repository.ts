@@ -147,10 +147,10 @@ export async function listIncomingRecommendations(receiverId: string) {
   const recommendations = await prisma.albumRecommendation.findMany({
     where: {
       receiverId,
-      status: "pending",
+      status: { in: ["pending", "accepted"] },
     },
     include: { sender: true, receiver: true, album: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ status: "desc" }, { updatedAt: "desc" }],
   });
 
   return recommendations.map(mapRecommendation);

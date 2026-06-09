@@ -4,9 +4,9 @@ import { getFriendRecommendationsEmptyStateCopy } from "./discover-empty-states"
 describe("discover empty states", () => {
   it("explains friend recommendations without asking for Spotify reconnection", () => {
     expect(getFriendRecommendationsEmptyStateCopy()).toEqual({
-      title: "Recomendacoes de amigos vao aparecer aqui",
+      title: "Nenhuma recomendacao por enquanto",
       description:
-        "Quando adicionarmos amigos, albuns recomendados por pessoas que voce segue ficarao nesta lista.",
+        "Quando uma conexao recomendar um album para voce, ele ficara aqui como pendente ou aceito.",
     });
   });
 });

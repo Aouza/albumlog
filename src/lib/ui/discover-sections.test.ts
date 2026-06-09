@@ -7,7 +7,7 @@ describe("discover sections", () => {
       {
         eyebrow: "Amigos",
         title: "Recomendacoes de amigos",
-        description: "Albuns enviados por amigos vao aparecer aqui quando a camada social existir.",
+        description: "Albuns enviados por conexoes ficam aqui para voce aceitar e revisitar depois.",
       },
     ]);
   });

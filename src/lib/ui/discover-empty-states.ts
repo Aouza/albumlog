@@ -1,7 +1,7 @@
 export function getFriendRecommendationsEmptyStateCopy() {
   return {
-    title: "Recomendacoes de amigos vao aparecer aqui",
+    title: "Nenhuma recomendacao por enquanto",
     description:
-      "Quando adicionarmos amigos, albuns recomendados por pessoas que voce segue ficarao nesta lista.",
+      "Quando uma conexao recomendar um album para voce, ele ficara aqui como pendente ou aceito.",
   };
 }
