@@ -103,26 +103,59 @@ GET /api/users/:handle
 
 The endpoint returns `albumsInCommon` only when the relationship is `connected`.
 
-## Next: Friend Recommendations
+## Implemented: Friend Recommendations
 
-Recommendations should let a connected user send an album to another connected user.
+Recommendations let a connected user send an album to another connected user.
 
-Suggested data model:
+Data model:
 
 ```text
-album_recommendations
+album_recommendations / AlbumRecommendation
 id
 sender_id
 receiver_id
 album_id
 message
-status: unread | seen | saved | dismissed
+status: pending | accepted | dismissed | cancelled
+responded_at
 created_at
 updated_at
 ```
 
 Rules:
 
-- Sender and receiver must be connected.
+- Sender and receiver must have an accepted connection.
+- A user cannot recommend an album to themselves.
 - Receiver does not need to already have the album in their library.
-- Recommendations should appear in Discover.
+- A sender can cancel a recommendation only while it is pending.
+- A receiver can accept or dismiss a recommendation only while it is pending.
+- A partial unique database index prevents duplicate pending recommendations for the same sender, receiver, and album.
+
+Endpoints:
+
+```text
+GET /api/recommendations
+POST /api/recommendations
+GET /api/recommendations/albums/:spotifyAlbumId
+POST /api/recommendations/:id/accept
+POST /api/recommendations/:id/dismiss
+POST /api/recommendations/:id/cancel
+```
+
+UI:
+
+```text
+/albums/:spotifyAlbumId
+/discover
+```
+
+Album pages include a recommendation action. The sender can select accepted connections, send an optional message, and see avatars for users who already received the album. Pending recommendations show a cancel action.
+
+Discover shows pending recommendations received from connections and lets the receiver accept or dismiss them.
+
+## Next Social Iterations
+
+- Add album to library when accepting a recommendation.
+- Add notification badges/counts for pending recommendations.
+- Add recommendation history in user profiles.
+- Add feed activity after accepted recommendations.

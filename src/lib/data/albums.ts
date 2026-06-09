@@ -76,17 +76,17 @@ export async function getLibrary(
 }
 
 export async function getAlbumDetail(_id: string): Promise<AlbumDetail | null> {
-  const library = await fetchSavedLibrary();
-  const entry = library.find((libraryEntry) => libraryEntry.album.id === _id);
+  const response = await fetch(`/api/albums/${encodeURIComponent(_id)}`);
 
-  if (!entry) {
+  if (response.status === 401 || response.status === 404) {
     return null;
   }
 
-  return {
-    album: entry.album,
-    userAlbum: entry.userAlbum,
-  };
+  if (!response.ok) {
+    throw new Error("Unable to load album detail");
+  }
+
+  return (await response.json()) as AlbumDetail;
 }
 
 export async function updateUserAlbum(input: UpdateUserAlbumInput): Promise<UserAlbum> {

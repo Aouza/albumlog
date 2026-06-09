@@ -1,19 +1,16 @@
 "use client";
 
-import { Compass, Search, UsersRound } from "lucide-react";
+import { Compass, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { FriendRecommendationsSection } from "@/components/discover/friend-recommendations-section";
 import { HorizontalAlbumSection } from "@/components/discover/horizontal-album-section";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useCatalogAlbumSearch, useLibrary } from "@/lib/queries/albums";
-import { getFriendRecommendationsEmptyStateCopy } from "@/lib/ui/discover-empty-states";
-import { getDiscoverStaticSections } from "@/lib/ui/discover-sections";
 
 export default function DiscoverPage() {
   const [query, setQuery] = useState("");
   const catalogSearch = useCatalogAlbumSearch(query);
   const library = useLibrary({ status: "all", query: "" });
-  const friendEmptyState = getFriendRecommendationsEmptyStateCopy();
-  const friendSection = getDiscoverStaticSections()[0];
 
   const libraryByAlbum = useMemo(() => {
     return new Map(library.data?.map((entry) => [entry.album.id, entry.userAlbum]) ?? []);
@@ -57,18 +54,7 @@ export default function DiscoverPage() {
         />
       )}
 
-      <section className="space-y-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#eef33f]">{friendSection.eyebrow}</p>
-          <h2 className="mt-1 text-xl font-semibold text-white">{friendSection.title}</h2>
-          <p className="mt-1 text-sm text-white/45">{friendSection.description}</p>
-        </div>
-        <EmptyState
-          icon={UsersRound}
-          title={friendEmptyState.title}
-          description={friendEmptyState.description}
-        />
-      </section>
+      <FriendRecommendationsSection />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Calendar, ExternalLink, Tag } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AlbumCover } from "@/components/album/album-cover";
+import { RecommendAlbumPanel } from "@/components/album/recommend-album-panel";
 import { ReviewEditor } from "@/components/review/review-editor";
 import { useAlbumDetail } from "@/lib/queries/albums";
 import { formatDate, formatRating } from "@/lib/utils";
@@ -76,6 +77,8 @@ export default function AlbumDetailPage() {
         </section>
 
         <ReviewEditor albumId={album.id} userAlbum={userAlbum} />
+
+        <RecommendAlbumPanel album={album} />
       </div>
     </div>
   );

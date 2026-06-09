@@ -18,14 +18,13 @@ describe("empty album data layer", () => {
     await expect(getLibrary({ status: "all", query: "" })).resolves.toEqual([]);
   });
 
-  it("returns null for album detail until Spotify library contains the album", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json({
-        albums: [],
-      }),
-    );
+  it("returns null for album detail until the catalog contains the album", async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(Response.json({ error: "album_not_found" }, { status: 404 }));
 
     await expect(getAlbumDetail("missing-album")).resolves.toBeNull();
+    expect(fetchSpy).toHaveBeenCalledWith("/api/albums/missing-album");
   });
 
   it("returns zeroed dashboard stats when Spotify library is empty", async () => {

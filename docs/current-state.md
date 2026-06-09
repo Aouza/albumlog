@@ -21,7 +21,7 @@ This document is the source of truth for what AlbumLog currently implements.
 - Spotify catalog search endpoint at `/api/spotify/search-albums`.
 - Manual Spotify library sync endpoint at `/api/spotify/sync`.
 - Spotify library sync status endpoint at `/api/spotify/sync/status`.
-- Discover page at `/discover` with Spotify catalog search and friend recommendations empty state.
+- Discover page at `/discover` with Spotify catalog search and pending friend recommendations.
 - Connections page at `/connections`.
 - Connection request flow with pending, accepted, and declined states.
 - Connection endpoints for user search, request creation, listing, acceptance, decline, and removal.
@@ -29,6 +29,10 @@ This document is the source of truth for what AlbumLog currently implements.
 - User profile page at `/users/[handle]`.
 - Basic public profile visibility for non-connected users.
 - Albums in common section for accepted connections.
+- Friend album recommendations between accepted connections.
+- Recommendation endpoints for creation, listing, acceptance, dismissal, and sender cancellation.
+- Album detail endpoint at `/api/albums/[spotifyAlbumId]` backed by the AlbumLog catalog.
+- Album pages can show catalog albums even when the current user has not saved them yet.
 - Library/dashboard data sourced from AlbumLog persisted Spotify imports.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
@@ -43,22 +47,19 @@ This document is the source of truth for what AlbumLog currently implements.
 - Empty states for:
   - Dashboard activity.
   - Discover catalog search when there are no Spotify album matches.
-  - Friend recommendations while social features are not implemented.
+  - Friend recommendations when there are no pending recommendations.
   - Library when Spotify has no saved albums or the user has not authorized library access.
   - Profile when logged out.
   - Favorites.
-- Album data layer backed by `/api/spotify/saved-albums` and `/api/spotify/search-albums`.
+- Album data layer backed by `/api/spotify/saved-albums`, `/api/spotify/search-albums`, and `/api/albums/[spotifyAlbumId]`.
 
 ## Not Implemented Yet
 
 - MusicBrainz fallback.
-- Persistent AlbumLog user album library.
 - Add album to library.
 - Album status persistence.
 - Rating persistence.
 - Review persistence.
-- Public profiles.
-- Friend recommendations.
 - Feed.
 - Likes.
 - Annual ranking.
@@ -78,6 +79,8 @@ This document is the source of truth for what AlbumLog currently implements.
 - Incremental sync imports only albums with Spotify `added_at` newer than the latest `UserAlbum.spotifySavedAt` already stored for the user.
 - Discover catalog search uses Spotify's `/v1/search` endpoint for album results.
 - Library reads persisted AlbumLog entries only.
+- Album detail reads the persisted AlbumLog catalog and joins the current user's library entry when one exists.
+- Friend recommendations are persisted in AlbumLog and only allowed between accepted connections.
 - Dashboard stats are derived from the saved albums currently loaded.
 - Ratings, reviews, and AlbumLog-specific status are not persisted yet.
 

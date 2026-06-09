@@ -8,52 +8,55 @@ datasource db {
 }
 
 model User {
-  id                     String               @id @default(cuid())
-  spotifyUserId          String               @unique
-  handle                 String               @unique
-  displayName            String
-  avatarUrl              String
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
-  spotifyAccount         SpotifyAccount?
-  userAlbums             UserAlbum[]
-  syncs                  SpotifyLibrarySync[]
-  requestedConnections   Connection[]         @relation("ConnectionRequester")
-  receivedConnections    Connection[]         @relation("ConnectionReceiver")
-  connectionPairsAsUserA Connection[]         @relation("ConnectionUserA")
-  connectionPairsAsUserB Connection[]         @relation("ConnectionUserB")
+  id                      String                @id @default(cuid())
+  spotifyUserId           String                @unique
+  handle                  String                @unique
+  displayName             String
+  avatarUrl               String
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  spotifyAccount          SpotifyAccount?
+  userAlbums              UserAlbum[]
+  syncs                   SpotifyLibrarySync[]
+  requestedConnections    Connection[]          @relation("ConnectionRequester")
+  receivedConnections     Connection[]          @relation("ConnectionReceiver")
+  connectionPairsAsUserA  Connection[]          @relation("ConnectionUserA")
+  connectionPairsAsUserB  Connection[]          @relation("ConnectionUserB")
+  sentRecommendations     AlbumRecommendation[] @relation("AlbumRecommendationSender")
+  receivedRecommendations AlbumRecommendation[] @relation("AlbumRecommendationReceiver")
 }
 
 model SpotifyAccount {
   id                    String   @id @default(cuid())
   userId                String   @unique
-  spotifyUserId          String   @unique
-  displayName            String
-  avatarUrl              String
-  accessTokenEncrypted   String
-  refreshTokenEncrypted  String?
-  scope                  String
-  tokenExpiresAt         DateTime
-  connectedAt            DateTime @default(now())
-  lastProfileSyncedAt    DateTime @default(now())
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spotifyUserId         String   @unique
+  displayName           String
+  avatarUrl             String
+  accessTokenEncrypted  String
+  refreshTokenEncrypted String?
+  scope                 String
+  tokenExpiresAt        DateTime
+  connectedAt           DateTime @default(now())
+  lastProfileSyncedAt   DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([spotifyUserId])
 }
 
 model Album {
-  id             String      @id @default(cuid())
-  spotifyAlbumId String      @unique
-  title          String
-  artistName     String
-  coverUrl       String
-  spotifyUrl     String
-  releaseDate    String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  userAlbums     UserAlbum[]
+  id              String                @id @default(cuid())
+  spotifyAlbumId  String                @unique
+  title           String
+  artistName      String
+  coverUrl        String
+  spotifyUrl      String
+  releaseDate     String
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  userAlbums      UserAlbum[]
+  recommendations AlbumRecommendation[]
 }
 
 model UserAlbum {
@@ -111,12 +114,31 @@ model Connection {
   updatedAt   DateTime  @updatedAt
   requester   User      @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
   receiver    User      @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  userA        User      @relation("ConnectionUserA", fields: [userAId], references: [id], onDelete: Cascade)
-  userB        User      @relation("ConnectionUserB", fields: [userBId], references: [id], onDelete: Cascade)
+  userA       User      @relation("ConnectionUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB       User      @relation("ConnectionUserB", fields: [userBId], references: [id], onDelete: Cascade)
 
   @@unique([userAId, userBId])
   @@index([requesterId, status])
   @@index([receiverId, status])
   @@index([userAId])
   @@index([userBId])
+}
+
+model AlbumRecommendation {
+  id          String    @id @default(cuid())
+  senderId    String
+  receiverId  String
+  albumId     String
+  status      String
+  message     String    @default("")
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  sender      User      @relation("AlbumRecommendationSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User      @relation("AlbumRecommendationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  album       Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, status])
+  @@index([receiverId, status])
+  @@index([albumId])
 }
