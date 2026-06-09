@@ -1,6 +1,5 @@
 export type AlbumStatus =
   | "want_to_listen"
-  | "listening"
   | "listened"
   | "favorite"
   | "abandoned"
@@ -62,7 +61,6 @@ export type DashboardStats = {
 
 export const albumStatusLabels: Record<AlbumStatus, string> = {
   want_to_listen: "Quero ouvir",
-  listening: "Ouvindo",
   listened: "Ouvido",
   favorite: "Favorito",
   abandoned: "Abandonado",

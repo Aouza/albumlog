@@ -32,7 +32,9 @@ This document is the source of truth for what AlbumLog currently implements.
 - Friend album recommendations between accepted connections.
 - Recommendation endpoints for creation, listing, acceptance, dismissal, and sender cancellation.
 - Album detail endpoint at `/api/albums/[spotifyAlbumId]` backed by the AlbumLog catalog.
+- Album entry update endpoint at `/api/albums/[spotifyAlbumId]` for status, rating, and review persistence.
 - Album pages can show catalog albums even when the current user has not saved them yet.
+- Album statuses supported by the product: Quero ouvir, Ouvido, Favorito, Abandonado, and Reouvir.
 - Library/dashboard data sourced from AlbumLog persisted Spotify imports.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
@@ -57,9 +59,6 @@ This document is the source of truth for what AlbumLog currently implements.
 
 - MusicBrainz fallback.
 - Add album to library.
-- Album status persistence.
-- Rating persistence.
-- Review persistence.
 - Feed.
 - Likes.
 - Annual ranking.
@@ -80,9 +79,9 @@ This document is the source of truth for what AlbumLog currently implements.
 - Discover catalog search uses Spotify's `/v1/search` endpoint for album results.
 - Library reads persisted AlbumLog entries only.
 - Album detail reads the persisted AlbumLog catalog and joins the current user's library entry when one exists.
+- Album entry edits persist to `user_albums`; updating an album creates a library entry when the album already exists in the AlbumLog catalog.
 - Friend recommendations are persisted in AlbumLog and only allowed between accepted connections.
 - Dashboard stats are derived from the saved albums currently loaded.
-- Ratings, reviews, and AlbumLog-specific status are not persisted yet.
 
 The app should never show fake albums, fake reviews, fake ratings, or fake users.
 

@@ -129,7 +129,7 @@ id
 user_id
 album_id
 source: spotify | manual | recommendation
-status: want_to_listen | listening | listened | favorite | abandoned | relisten
+status: want_to_listen | listened | favorite | abandoned | relisten
 rating
 review
 listened_at

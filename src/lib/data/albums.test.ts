@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getAlbumDetail, getDashboardStats, getLibrary, searchAlbums, searchCatalogAlbums } from "./albums";
+import {
+  getAlbumDetail,
+  getDashboardStats,
+  getLibrary,
+  searchAlbums,
+  searchCatalogAlbums,
+  updateUserAlbum,
+} from "./albums";
 
 describe("empty album data layer", () => {
   afterEach(() => {
@@ -65,5 +72,40 @@ describe("empty album data layer", () => {
     await expect(searchCatalogAlbums("Heroine")).resolves.toMatchObject([
       { id: "catalog-album", title: "Heroine" },
     ]);
+  });
+
+  it("persists user album status through the AlbumLog album API", async () => {
+    const userAlbum = {
+      id: "user-album-id",
+      userId: "user-id",
+      albumId: "spotify-album-id",
+      status: "favorite",
+      rating: 4.5,
+      review: "Grande album.",
+      listenedAt: null,
+      createdAt: "2026-06-09T12:00:00.000Z",
+      updatedAt: "2026-06-09T12:00:00.000Z",
+    };
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(Response.json({ userAlbum }));
+
+    await expect(
+      updateUserAlbum({
+        albumId: "spotify-album-id",
+        status: "favorite",
+        rating: 4.5,
+        review: "Grande album.",
+      }),
+    ).resolves.toEqual(userAlbum);
+    expect(fetchSpy).toHaveBeenCalledWith("/api/albums/spotify-album-id", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: "favorite",
+        rating: 4.5,
+        review: "Grande album.",
+      }),
+    });
   });
 });

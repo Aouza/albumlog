@@ -90,7 +90,25 @@ export async function getAlbumDetail(_id: string): Promise<AlbumDetail | null> {
 }
 
 export async function updateUserAlbum(input: UpdateUserAlbumInput): Promise<UserAlbum> {
-  throw new Error(`Album updates require a real catalog entry: ${input.albumId}`);
+  const response = await fetch(`/api/albums/${encodeURIComponent(input.albumId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      status: input.status,
+      rating: input.rating ?? null,
+      review: input.review ?? "",
+    }),
+  });
+
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { message?: string } | null;
+
+    throw new Error(body?.message ?? "Nao foi possivel salvar sua entrada agora.");
+  }
+
+  const payload = (await response.json()) as { userAlbum: UserAlbum };
+
+  return payload.userAlbum;
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {

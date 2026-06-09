@@ -2,7 +2,7 @@
 
 ## Overview
 
-AlbumLog is a platform for music lovers to track albums they have listened to, want to hear, or are currently hearing.
+AlbumLog is a platform for music lovers to track albums they have listened to, want to hear, favorited, abandoned, or want to revisit.
 
 It works like a mix between Letterboxd and Goodreads, but focused on music and the experience of listening to complete albums.
 
@@ -96,7 +96,6 @@ User can add an album to their collection.
 Available statuses:
 
 - Quero Ouvir.
-- Ouvindo.
 - Ouvido.
 - Favorito.
 - Abandonado.
@@ -108,7 +107,7 @@ Scale from `0.5` to `5.0` in half-star increments.
 
 ### Review
 
-Free text field once library persistence is connected.
+Free text field persisted in the user's AlbumLog library entry.
 
 Example: `Excelente producao. Atmosfera pesada e emocional.`
 

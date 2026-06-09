@@ -49,8 +49,8 @@ export function ReviewEditor({
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-sm text-white/45">
           {updateAlbum.isSuccess
-            ? "Entrada salva nesta sessao."
-            : "Edicao indisponivel ate a biblioteca persistente ser conectada."}
+            ? "Entrada salva na sua biblioteca."
+            : "Status, nota e review ficam salvos na sua biblioteca AlbumLog."}
         </p>
         <button
           type="button"

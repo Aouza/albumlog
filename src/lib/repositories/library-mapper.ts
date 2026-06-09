@@ -1,4 +1,5 @@
 import type { Album, LibraryEntry, UserAlbum } from "@/types/album";
+import { normalizeAlbumStatus } from "../albums/album-status";
 
 export type PersistedUserAlbum = {
   id: string;
@@ -41,7 +42,7 @@ export function mapPersistedUserAlbumToUserAlbum(
     id: userAlbum.id,
     userId,
     albumId: userAlbum.albumId ?? "",
-    status: userAlbum.status as UserAlbum["status"],
+    status: normalizeAlbumStatus(userAlbum.status),
     rating: userAlbum.rating,
     review: userAlbum.review,
     listenedAt: userAlbum.listenedAt?.toISOString() ?? null,

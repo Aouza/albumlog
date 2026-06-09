@@ -142,7 +142,7 @@ function ProfileContent() {
           <EmptyState
             icon={Heart}
             title="Nenhum favorito ainda"
-            description="Seus favoritos do AlbumLog vao aparecer aqui quando a persistencia de status estiver conectada."
+            description="Marque albuns como favoritos para montar sua vitrine musical."
           />
         )}
       </section>

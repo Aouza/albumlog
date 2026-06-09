@@ -50,7 +50,6 @@
 | Value | Label |
 | --- | --- |
 | want_to_listen | Quero Ouvir |
-| listening | Ouvindo |
 | listened | Ouvido |
 | favorite | Favorito |
 | abandoned | Abandonado |
