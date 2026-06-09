@@ -1,11 +1,12 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, Clock3, Library } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlbumCard } from "@/components/album/album-card";
 import { LibraryFilters } from "@/components/library/library-filters";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useLibrary, useSpotifySyncStatus, useSyncSpotifyLibrary } from "@/lib/queries/albums";
+import { useAlbumSocialContext } from "@/lib/queries/album-social-context";
 import { getLibraryEmptyStateCopy } from "@/lib/ui/album-empty-states";
 import type { LibraryFilters as LibraryFiltersType } from "@/types/album";
 
@@ -16,6 +17,8 @@ export default function LibraryPage() {
   const syncSpotifyLibrary = useSyncSpotifyLibrary();
   const spotifySyncStatus = useSpotifySyncStatus();
   const latestSync = spotifySyncStatus.data?.sync;
+  const albumIds = useMemo(() => library.data?.map((entry) => entry.album.id) ?? [], [library.data]);
+  const albumSocialContext = useAlbumSocialContext(albumIds);
   const didStartInitialSync = useRef(false);
   const isSyncing = syncSpotifyLibrary.isPending || latestSync?.status === "syncing";
   const hasActiveFilters = filters.status !== "all" || Boolean(filters.query.trim());
@@ -126,6 +129,7 @@ export default function LibraryPage() {
             album={entry.album}
             userAlbum={entry.userAlbum}
             priorityCover={index === 0}
+            socialContext={albumSocialContext.data?.albums[entry.album.id]}
           />
         ))}
       </div>

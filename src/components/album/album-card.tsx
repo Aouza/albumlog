@@ -3,10 +3,12 @@
 import { ArrowUpRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { AlbumCover } from "@/components/album/album-cover";
+import { AlbumSocialStack } from "@/components/album/album-social-stack";
 import { StatusSelect } from "@/components/album/status-select";
 import { useUpdateUserAlbum } from "@/lib/queries/albums";
 import { cn, formatDate, formatRating, statusTone } from "@/lib/utils";
 import type { Album, AlbumStatus, UserAlbum } from "@/types/album";
+import type { AlbumSocialContext } from "@/types/album-social-context";
 import { albumStatusLabels } from "@/types/album";
 
 export function AlbumCard({
@@ -15,12 +17,14 @@ export function AlbumCard({
   compact = false,
   priorityCover = false,
   libraryAction = "enabled",
+  socialContext,
 }: {
   album: Album;
   userAlbum?: UserAlbum | null;
   compact?: boolean;
   priorityCover?: boolean;
   libraryAction?: "enabled" | "preview";
+  socialContext?: AlbumSocialContext;
 }) {
   const updateAlbum = useUpdateUserAlbum();
   const currentStatus: AlbumStatus = userAlbum?.status ?? "want_to_listen";
@@ -70,6 +74,12 @@ export function AlbumCard({
           </span>
           {!compact && <span className="text-white/38">{formatDate(album.releaseDate)}</span>}
         </div>
+
+        {socialContext?.total ? (
+          <div className="mt-3">
+            <AlbumSocialStack context={socialContext} />
+          </div>
+        ) : null}
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {libraryAction === "preview" ? (

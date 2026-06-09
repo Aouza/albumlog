@@ -29,6 +29,8 @@ This document is the source of truth for what AlbumLog currently implements.
 - User profile page at `/users/[handle]`.
 - Basic public profile visibility for non-connected users.
 - Albums in common section for accepted connections.
+- Album cards can show accepted connections who also have the same album.
+- Batch album social context endpoint at `/api/albums/social-context`.
 - Friend album recommendations between accepted connections.
 - Recommendation endpoints for creation, listing, acceptance, dismissal, and sender cancellation.
 - Album detail endpoint at `/api/albums/[spotifyAlbumId]` backed by the AlbumLog catalog.
@@ -81,6 +83,7 @@ This document is the source of truth for what AlbumLog currently implements.
 - Album detail reads the persisted AlbumLog catalog and joins the current user's library entry when one exists.
 - Album entry edits persist to `user_albums`; updating an album creates a library entry when the album already exists in the AlbumLog catalog.
 - Friend recommendations are persisted in AlbumLog and only allowed between accepted connections.
+- Album social context reads accepted connections in batch and limits the request size to avoid per-card database queries.
 - Dashboard stats are derived from the saved albums currently loaded.
 
 The app should never show fake albums, fake reviews, fake ratings, or fake users.

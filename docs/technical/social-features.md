@@ -103,6 +103,47 @@ GET /api/users/:handle
 
 The endpoint returns `albumsInCommon` only when the relationship is `connected`.
 
+## Implemented: Album Social Context In Cards
+
+Album cards can show accepted connections who also have that album in their AlbumLog library.
+
+Endpoint:
+
+```text
+POST /api/albums/social-context
+```
+
+Request:
+
+```json
+{
+  "albumIds": ["spotify_album_id"]
+}
+```
+
+Response:
+
+```json
+{
+  "albums": {
+    "spotify_album_id": {
+      "connections": [
+        { "id": "user_id", "name": "Alison", "handle": "alison", "avatarUrl": "https://..." }
+      ],
+      "total": 1
+    }
+  }
+}
+```
+
+Rules:
+
+- Only accepted connections are included.
+- Removed Spotify albums are excluded.
+- Cards render a limited avatar stack and a total count.
+- The client fetches context in batches per visible album list, never per card.
+- The current request limit is 300 album ids.
+
 ## Implemented: Friend Recommendations
 
 Recommendations let a connected user send an album to another connected user.

@@ -2,15 +2,22 @@
 
 import { Activity, Headphones, Library, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { AlbumCard } from "@/components/album/album-card";
 import { StatsStrip } from "@/components/stats/stats-strip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useDashboardStats, useLibrary } from "@/lib/queries/albums";
+import { useAlbumSocialContext } from "@/lib/queries/album-social-context";
 
 export default function DashboardPage() {
   const stats = useDashboardStats();
   const library = useLibrary({ status: "all", query: "" });
-  const recentEntries = library.data?.slice(0, 3) ?? [];
+  const recentEntries = useMemo(() => library.data?.slice(0, 3) ?? [], [library.data]);
+  const recentAlbumIds = useMemo(
+    () => recentEntries.map((entry) => entry.album.id),
+    [recentEntries],
+  );
+  const albumSocialContext = useAlbumSocialContext(recentAlbumIds);
 
   return (
     <div className="space-y-6">
@@ -107,6 +114,7 @@ export default function DashboardPage() {
                 userAlbum={entry.userAlbum}
                 compact
                 priorityCover={index === 0}
+                socialContext={albumSocialContext.data?.albums[entry.album.id]}
               />
             ))}
           </div>

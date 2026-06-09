@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { AlbumCard } from "@/components/album/album-card";
+import { useAlbumSocialContext } from "@/lib/queries/album-social-context";
 import type { Album, UserAlbum } from "@/types/album";
 
 export function HorizontalAlbumSection({
@@ -18,6 +20,9 @@ export function HorizontalAlbumSection({
   libraryByAlbum?: Map<string, UserAlbum>;
   libraryAction?: "enabled" | "preview";
 }) {
+  const albumIds = useMemo(() => albums.map((album) => album.id), [albums]);
+  const albumSocialContext = useAlbumSocialContext(albumIds);
+
   if (albums.length === 0) {
     return null;
   }
@@ -38,6 +43,7 @@ export function HorizontalAlbumSection({
               compact
               libraryAction={libraryAction}
               priorityCover={index === 0}
+              socialContext={albumSocialContext.data?.albums[album.id]}
             />
           </div>
         ))}
