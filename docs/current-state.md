@@ -22,6 +22,9 @@ This document is the source of truth for what AlbumLog currently implements.
 - Manual Spotify library sync endpoint at `/api/spotify/sync`.
 - Spotify library sync status endpoint at `/api/spotify/sync/status`.
 - Discover page at `/discover` with Spotify catalog search and friend recommendations empty state.
+- Connections page at `/connections`.
+- Connection request flow with pending, accepted, and declined states.
+- Connection endpoints for user search, request creation, listing, acceptance, decline, and removal.
 - Library/dashboard data sourced from AlbumLog persisted Spotify imports.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
@@ -51,7 +54,8 @@ This document is the source of truth for what AlbumLog currently implements.
 - Rating persistence.
 - Review persistence.
 - Public profiles.
-- Friends/follows.
+- Albums in common.
+- Friend recommendations.
 - Feed.
 - Likes.
 - Annual ranking.

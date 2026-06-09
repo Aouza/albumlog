@@ -8,15 +8,19 @@ datasource db {
 }
 
 model User {
-  id             String               @id @default(cuid())
-  spotifyUserId  String               @unique
-  displayName    String
-  avatarUrl      String
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  spotifyAccount SpotifyAccount?
-  userAlbums     UserAlbum[]
-  syncs          SpotifyLibrarySync[]
+  id                     String               @id @default(cuid())
+  spotifyUserId          String               @unique
+  displayName            String
+  avatarUrl              String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  spotifyAccount         SpotifyAccount?
+  userAlbums             UserAlbum[]
+  syncs                  SpotifyLibrarySync[]
+  requestedConnections   Connection[]         @relation("ConnectionRequester")
+  receivedConnections    Connection[]         @relation("ConnectionReceiver")
+  connectionPairsAsUserA Connection[]         @relation("ConnectionUserA")
+  connectionPairsAsUserB Connection[]         @relation("ConnectionUserB")
 }
 
 model SpotifyAccount {
@@ -92,4 +96,26 @@ model SpotifyLibrarySync {
 
   @@index([userId, startedAt])
   @@index([status])
+}
+
+model Connection {
+  id          String    @id @default(cuid())
+  requesterId String
+  receiverId  String
+  userAId     String
+  userBId     String
+  status      String
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  requester   User      @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver    User      @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  userA        User      @relation("ConnectionUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB        User      @relation("ConnectionUserB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+  @@index([requesterId, status])
+  @@index([receiverId, status])
+  @@index([userAId])
+  @@index([userBId])
 }

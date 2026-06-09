@@ -1,6 +1,6 @@
 "use client";
 
-import { Disc3, Home, Library, Search, Sparkles, UserCircle } from "lucide-react";
+import { Disc3, Home, Library, Search, Sparkles, UserCircle, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -11,6 +11,7 @@ const navItems = [
   { href: "/", label: "Inicio", icon: Home },
   { href: "/discover", label: "Descobrir", icon: Search },
   { href: "/library", label: "Biblioteca", icon: Library },
+  { href: "/connections", label: "Conexoes", icon: UsersRound },
   { href: "/profile", label: "Perfil", icon: UserCircle },
 ];
 
