@@ -12,6 +12,12 @@ Conexoes
 
 A user can send a connection request to another user. The receiver must accept before both users are considered connected.
 
+Users have a unique public handle for discovery and future profile URLs, displayed as:
+
+```text
+@lucasdemo
+```
+
 ## Implemented: Connections
 
 Data model:
@@ -28,6 +34,8 @@ responded_at
 created_at
 updated_at
 ```
+
+Search supports display name and handle.
 
 Rules:
 

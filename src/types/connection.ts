@@ -3,6 +3,7 @@ import type { ConnectionStatus } from "@/lib/connections/connection-rules";
 export type ConnectionUser = {
   id: string;
   name: string;
+  handle: string;
   avatarUrl: string;
 };
 

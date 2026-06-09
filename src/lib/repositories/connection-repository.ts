@@ -49,6 +49,7 @@ type ConnectionWithUsers = ConnectionRecord & {
 
 type ConnectionUserRecord = {
   id: string;
+  handle: string;
   displayName: string;
   avatarUrl: string;
 };
@@ -57,6 +58,7 @@ function mapUser(user: ConnectionUserRecord): ConnectionUser {
   return {
     id: user.id,
     name: user.displayName,
+    handle: user.handle,
     avatarUrl: user.avatarUrl,
   };
 }
@@ -158,9 +160,12 @@ export async function searchConnectableUsers(
   const users = await prisma.user.findMany({
     where: {
       id: { not: currentUserId },
-      displayName: { contains: normalizedQuery, mode: "insensitive" },
+      OR: [
+        { displayName: { contains: normalizedQuery, mode: "insensitive" } },
+        { handle: { contains: normalizedQuery.replace(/^@/, ""), mode: "insensitive" } },
+      ],
     },
-    select: { id: true, displayName: true, avatarUrl: true },
+    select: { id: true, handle: true, displayName: true, avatarUrl: true },
     take: 12,
     orderBy: { displayName: "asc" },
   });
@@ -199,6 +204,7 @@ export async function searchConnectableUsers(
     return {
       id: user.id,
       name: user.displayName,
+      handle: user.handle,
       avatarUrl: user.avatarUrl,
       connectionId: connection?.id ?? null,
       connectionStatus: status,

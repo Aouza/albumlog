@@ -22,6 +22,15 @@ function Avatar({ user }: { user: { name: string; avatarUrl: string } }) {
   );
 }
 
+function UserIdentity({ user }: { user: { name: string; handle: string } }) {
+  return (
+    <div className="min-w-0">
+      <p className="truncate text-sm font-semibold text-white">{user.name}</p>
+      <p className="truncate text-xs text-white/40">@{user.handle}</p>
+    </div>
+  );
+}
+
 function ConnectionRow({
   connection,
   variant,
@@ -38,7 +47,7 @@ function ConnectionRow({
       <div className="flex min-w-0 items-center gap-3">
         <Avatar user={connection.user} />
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-white">{connection.user.name}</p>
+          <UserIdentity user={connection.user} />
           <p className="text-xs text-white/40">
             {variant === "accepted"
               ? "Conectado"
@@ -108,7 +117,7 @@ function UserSearchRow({
     <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3">
       <div className="flex min-w-0 items-center gap-3">
         <Avatar user={user} />
-        <p className="truncate text-sm font-semibold text-white">{user.name}</p>
+        <UserIdentity user={user} />
       </div>
       <button
         type="button"
@@ -150,7 +159,7 @@ export default function ConnectionsPage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Busque usuarios por nome"
+            placeholder="Busque usuarios por nome ou @handle"
             className="h-14 w-full rounded-2xl border border-white/10 bg-[#0b0b16]/86 pl-12 pr-4 text-base text-white shadow-[0_18px_55px_rgba(0,0,0,0.32)] outline-none backdrop-blur-xl transition placeholder:text-white/32 focus:border-[#4f5bff] focus:ring-2 focus:ring-[#4f5bff]/25"
           />
         </label>

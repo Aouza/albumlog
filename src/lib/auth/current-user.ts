@@ -18,6 +18,7 @@ export async function getCurrentAlbumLogUser() {
     select: {
       id: true,
       spotifyUserId: true,
+      handle: true,
       displayName: true,
       avatarUrl: true,
     },

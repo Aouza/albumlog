@@ -10,6 +10,7 @@ datasource db {
 model User {
   id                     String               @id @default(cuid())
   spotifyUserId          String               @unique
+  handle                 String               @unique
   displayName            String
   avatarUrl              String
   createdAt              DateTime             @default(now())

@@ -1,6 +1,24 @@
+import crypto from "node:crypto";
 import type { SpotifySession, SpotifyTokenResponse } from "@/lib/auth/spotify";
 import { prisma } from "@/lib/db/prisma";
 import { encryptToken } from "@/lib/security/token-crypto";
+import { buildHandleCandidates } from "@/lib/users/handle";
+
+async function createUniqueHandle(displayName: string) {
+  const candidates = buildHandleCandidates(displayName);
+  const existingHandles = await prisma.user.findMany({
+    where: { handle: { in: candidates } },
+    select: { handle: true },
+  });
+  const usedHandles = new Set(existingHandles.map((user) => user.handle));
+  const handle = candidates.find((candidate) => !usedHandles.has(candidate));
+
+  if (!handle) {
+    return `${candidates[0]}-${crypto.randomUUID().slice(0, 8)}`;
+  }
+
+  return handle;
+}
 
 export async function upsertSpotifyAccount({
   profile,
@@ -19,6 +37,7 @@ export async function upsertSpotifyAccount({
     },
     create: {
       spotifyUserId: profile.id,
+      handle: await createUniqueHandle(profile.name),
       displayName: profile.name,
       avatarUrl: profile.avatarUrl,
     },

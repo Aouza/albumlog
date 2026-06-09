@@ -25,6 +25,7 @@ This document is the source of truth for what AlbumLog currently implements.
 - Connections page at `/connections`.
 - Connection request flow with pending, accepted, and declined states.
 - Connection endpoints for user search, request creation, listing, acceptance, decline, and removal.
+- Unique public user handles for connection search and future public profile URLs.
 - Library/dashboard data sourced from AlbumLog persisted Spotify imports.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
