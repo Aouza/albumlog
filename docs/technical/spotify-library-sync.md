@@ -36,9 +36,24 @@ Spotify does not provide a webhook for saved-album changes, so AlbumLog needs ex
 
 ## Current MVP Status
 
-AlbumLog currently reads saved albums live from Spotify via `/api/spotify/saved-albums`, but does not persist them in an AlbumLog database yet.
+AlbumLog has the first persistence slice implemented with Prisma and Supabase Postgres.
 
-This sync design becomes the next architecture step once database persistence is introduced.
+Implemented:
+
+- Prisma schema and initial migration.
+- `users`, `spotify_accounts`, `albums`, `user_albums`, and `spotify_library_syncs`.
+- encrypted Spotify token storage.
+- Spotify account persistence after OAuth callback.
+- manual `/api/spotify/sync` endpoint.
+- Library button for `Atualizar Spotify`.
+- `/api/spotify/saved-albums` reads persisted library rows first and falls back to live Spotify data for unsynced users.
+
+Not implemented yet:
+
+- automatic six-hour sync;
+- scheduled background sync;
+- removal reconciliation;
+- friends and recommendations.
 
 ## Recommended Data Model
 

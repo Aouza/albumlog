@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String               @id @default(cuid())
+  spotifyUserId  String               @unique
+  displayName    String
+  avatarUrl      String
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  spotifyAccount SpotifyAccount?
+  userAlbums     UserAlbum[]
+  syncs          SpotifyLibrarySync[]
+}
+
+model SpotifyAccount {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  spotifyUserId          String   @unique
+  displayName            String
+  avatarUrl              String
+  accessTokenEncrypted   String
+  refreshTokenEncrypted  String?
+  scope                  String
+  tokenExpiresAt         DateTime
+  connectedAt            DateTime @default(now())
+  lastProfileSyncedAt    DateTime @default(now())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([spotifyUserId])
+}
+
+model Album {
+  id             String      @id @default(cuid())
+  spotifyAlbumId String      @unique
+  title          String
+  artistName     String
+  coverUrl       String
+  spotifyUrl     String
+  releaseDate    String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  userAlbums     UserAlbum[]
+}
+
+model UserAlbum {
+  id                 String    @id @default(cuid())
+  userId             String
+  albumId            String
+  source             String
+  status             String
+  rating             Float?
+  review             String    @default("")
+  listenedAt         DateTime?
+  spotifySavedAt     DateTime?
+  removedFromSpotify Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  album              Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, albumId])
+  @@index([userId, spotifySavedAt])
+  @@index([userId, status])
+  @@index([albumId])
+}
+
+model SpotifyLibrarySync {
+  id                 String    @id @default(cuid())
+  userId             String
+  status             String
+  syncType           String
+  startedAt          DateTime  @default(now())
+  finishedAt         DateTime?
+  lastSyncedAt       DateTime?
+  lastFullSyncedAt   DateTime?
+  totalImported      Int       @default(0)
+  totalUpdated       Int       @default(0)
+  totalMarkedRemoved Int       @default(0)
+  errorMessage       String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+  @@index([status])
+}

@@ -6,27 +6,22 @@ import {
   readSessionToken,
   refreshSpotifyToken,
 } from "@/lib/auth/spotify";
-import { getPersistedLibraryForSpotifyUser } from "@/lib/repositories/library-repository";
-import { fetchSavedAlbums } from "@/lib/spotify/albums";
+import { prisma } from "@/lib/db/prisma";
+import { syncSpotifyLibrary } from "@/lib/sync/spotify-library-sync";
 
-export async function GET() {
+export async function POST() {
   const cookieStore = await cookies();
   const sessionSecret = getRequiredEnv("AUTH_SESSION_SECRET");
-  const sessionToken = cookieStore.get("albumlog_session")?.value;
-  const session = await readSessionToken(sessionToken, sessionSecret);
+  const session = await readSessionToken(cookieStore.get("albumlog_session")?.value, sessionSecret);
 
   if (!session?.spotifyAccessToken) {
     return NextResponse.json({ error: "not_authenticated" }, { status: 401 });
   }
 
-  if (!session.spotifyScope?.split(" ").includes("user-library-read")) {
-    return NextResponse.json({ error: "missing_scope" }, { status: 403 });
-  }
+  const user = await prisma.user.findUnique({ where: { spotifyUserId: session.id } });
 
-  const persistedAlbums = await getPersistedLibraryForSpotifyUser(session.id);
-
-  if (persistedAlbums.length > 0) {
-    return NextResponse.json({ albums: persistedAlbums, source: "database" });
+  if (!user) {
+    return NextResponse.json({ error: "user_not_persisted" }, { status: 409 });
   }
 
   let accessToken = session.spotifyAccessToken;
@@ -49,8 +44,11 @@ export async function GET() {
     };
   }
 
-  const albums = await fetchSavedAlbums(accessToken);
-  const response = NextResponse.json({ albums });
+  const summary = await syncSpotifyLibrary({
+    userId: user.id,
+    accessToken,
+  });
+  const response = NextResponse.json({ summary });
 
   if (nextSession !== session) {
     response.cookies.set("albumlog_session", await createSessionToken(nextSession, sessionSecret), {

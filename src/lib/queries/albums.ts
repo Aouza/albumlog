@@ -68,3 +68,24 @@ export function useUpdateUserAlbum() {
     },
   });
 }
+
+export function useSyncSpotifyLibrary() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/spotify/sync", { method: "POST" });
+
+      if (!response.ok) {
+        throw new Error("Unable to sync Spotify library");
+      }
+
+      return (await response.json()) as {
+        summary: { totalImported: number; totalUpdated: number; totalMarkedRemoved: number };
+      };
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: albumKeys.all });
+    },
+  });
+}

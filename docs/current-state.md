@@ -7,6 +7,8 @@ This document is the source of truth for what AlbumLog currently implements.
 - Next.js App Router application.
 - TypeScript.
 - React Query.
+- Prisma.
+- Supabase Postgres.
 - Dark dashboard UI based on the references in `docs/ui-refs`.
 - Spotify OAuth login.
 - Signed HTTP-only session cookie.
@@ -17,8 +19,11 @@ This document is the source of truth for what AlbumLog currently implements.
 - Profile page that shows the Spotify user when logged in.
 - Spotify saved albums endpoint at `/api/spotify/saved-albums`.
 - Spotify catalog search endpoint at `/api/spotify/search-albums`.
+- Manual Spotify library sync endpoint at `/api/spotify/sync`.
 - Discover page at `/discover` with Spotify catalog search and friend recommendations empty state.
-- Library/dashboard data sourced from the user's saved Spotify albums.
+- Library/dashboard data sourced from AlbumLog persisted Spotify imports when available, with live Spotify fallback for unsynced users.
+- Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
+- Spotify account persistence with encrypted token storage.
 - Token refresh for Spotify API calls when the session has a refresh token.
 - Empty states for:
   - Dashboard activity.
@@ -32,7 +37,6 @@ This document is the source of truth for what AlbumLog currently implements.
 ## Not Implemented Yet
 
 - MusicBrainz fallback.
-- Database.
 - Persistent AlbumLog user album library.
 - Add album to library.
 - Album status persistence.
@@ -52,9 +56,11 @@ This document is the source of truth for what AlbumLog currently implements.
 ## Current Data Behavior
 
 - Authentication data comes from Spotify after login.
+- Spotify account records are persisted in Supabase Postgres after login.
 - Saved albums come from Spotify's `/v1/me/albums` endpoint.
+- Manual sync imports saved Spotify albums into AlbumLog tables.
 - Discover catalog search uses Spotify's `/v1/search` endpoint for album results.
-- Library shows saved Spotify albums as AlbumLog entries with default status `Quero ouvir`.
+- Library reads persisted AlbumLog entries when sync data exists, otherwise falls back to live saved Spotify albums.
 - Dashboard stats are derived from the saved albums currently loaded.
 - Ratings, reviews, and AlbumLog-specific status are not persisted yet.
 
