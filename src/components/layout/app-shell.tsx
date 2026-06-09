@@ -15,6 +15,8 @@ const navItems = [
   { href: "/profile", label: "Perfil", icon: UserCircle },
 ];
 
+const mobileNavItems = navItems.filter((item) => item.href !== "/");
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
@@ -54,12 +56,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#070711]/76 backdrop-blur-xl lg:ml-[124px]">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3 text-base font-semibold lg:hidden">
+        <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-2 px-3 py-3 sm:px-6 lg:px-8">
+          <Link href="/" className="flex shrink-0 items-center gap-3 text-base font-semibold lg:hidden">
             <span className="flex size-10 items-center justify-center rounded-2xl bg-[#3f46ff] text-white">
               <Disc3 size={20} />
             </span>
-            AlbumLog
+            <span className="hidden min-[420px]:inline">AlbumLog</span>
           </Link>
           <div className="hidden items-center gap-3 lg:flex">
             <p className="text-sm font-semibold text-white">AlbumLog</p>
@@ -67,8 +69,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               music diary
             </span>
           </div>
-          <nav className="flex items-center gap-1 lg:hidden">
-            {navItems.map((item) => {
+          <nav className="flex min-w-0 flex-1 items-center justify-center gap-1 lg:hidden">
+            {mobileNavItems.map((item) => {
               const Icon = item.icon;
               const active =
                 item.href === "/" ? pathname === item.href : pathname.startsWith(item.href);
@@ -78,13 +80,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white",
-                    active && "bg-white text-[#080813] shadow-sm",
+                    "flex size-10 shrink-0 items-center justify-center rounded-xl border border-transparent text-white/60 transition hover:border-white/10 hover:bg-white/[0.06] hover:text-white",
+                    active && "border-[#8f97ff]/45 bg-[#4f5bff]/18 text-white shadow-[0_0_24px_rgba(79,91,255,0.22)]",
                   )}
                   title={item.label}
+                  aria-label={item.label}
                 >
                   <Icon size={17} />
-                  <span className="hidden sm:inline">{item.label}</span>
                 </Link>
               );
             })}

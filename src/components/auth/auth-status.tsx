@@ -45,8 +45,9 @@ export function AuthStatus() {
 
   if (me.isLoading) {
     return (
-      <div className="inline-flex h-10 items-center rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-white/48">
-        Verificando...
+      <div className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-sm font-semibold text-white/48 sm:w-auto sm:px-3">
+        <UserCircle size={16} className="sm:hidden" />
+        <span className="hidden sm:inline">Verificando...</span>
       </div>
     );
   }
@@ -55,21 +56,24 @@ export function AuthStatus() {
     return (
       <Link
         href="/login"
-        className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-white/72 transition hover:bg-white/10 hover:text-white"
+        className="inline-flex size-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] text-sm font-semibold text-white/72 transition hover:bg-white/10 hover:text-white sm:w-auto sm:px-3"
+        aria-label="Entrar com Spotify"
+        title="Entrar com Spotify"
       >
         <LogIn size={16} />
-        Spotify
+        <span className="hidden sm:inline">Spotify</span>
       </Link>
     );
   }
 
   return (
-    <div className="relative">
+    <div className="relative shrink-0">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-2 rounded-2xl border border-[#1db954]/25 bg-[#1db954]/10 p-1.5 pr-2 text-left shadow-[0_0_28px_rgba(29,185,84,0.14)] transition hover:bg-[#1db954]/15"
+        className="flex shrink-0 items-center gap-2 rounded-2xl border border-[#1db954]/25 bg-[#1db954]/10 p-1.5 text-left shadow-[0_0_28px_rgba(29,185,84,0.14)] transition hover:bg-[#1db954]/15 sm:pr-2"
         aria-expanded={open}
+        aria-label="Abrir menu da conta"
       >
         {user.avatarUrl ? (
           <Image
@@ -85,11 +89,11 @@ export function AuthStatus() {
           </div>
         )}
         <span className="hidden max-w-28 truncate text-sm font-semibold text-white/86 sm:block">{user.name}</span>
-        <ChevronDown size={15} className="text-white/45" />
+        <ChevronDown size={15} className="hidden text-white/45 sm:block" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-40 w-72 overflow-hidden rounded-2xl border border-white/10 bg-[#0b0b16] shadow-[0_24px_90px_rgba(0,0,0,0.62)]">
+        <div className="absolute right-0 top-12 z-40 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-white/10 bg-[#0b0b16] shadow-[0_24px_90px_rgba(0,0,0,0.62)]">
           <div className="border-b border-white/10 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1db954]">
               Conectado via Spotify
