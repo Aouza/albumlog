@@ -7,6 +7,7 @@ import {
   RecommendationForbiddenError,
   RecommendationNotFoundError,
 } from "@/lib/recommendations/recommendation-errors";
+import { getRecommendationLibraryDefaults } from "@/lib/recommendations/recommendation-library";
 import {
   canCancelRecommendation,
   canRespondToRecommendation,
@@ -181,18 +182,43 @@ export async function cancelRecommendation(recommendationId: string, currentUser
 }
 
 export async function acceptRecommendation(recommendationId: string, currentUserId: string) {
-  await respondToRecommendation(recommendationId, currentUserId, "accepted");
+  const recommendation = await getRespondableRecommendation(recommendationId, currentUserId);
+  const libraryDefaults = getRecommendationLibraryDefaults();
+
+  await prisma.$transaction([
+    prisma.albumRecommendation.update({
+      where: { id: recommendationId },
+      data: { status: "accepted", respondedAt: new Date() },
+    }),
+    prisma.userAlbum.upsert({
+      where: {
+        userId_albumId: {
+          userId: currentUserId,
+          albumId: recommendation.albumId,
+        },
+      },
+      create: {
+        userId: currentUserId,
+        albumId: recommendation.albumId,
+        ...libraryDefaults,
+      },
+      update: {
+        removedFromSpotify: false,
+      },
+    }),
+  ]);
 }
 
 export async function dismissRecommendation(recommendationId: string, currentUserId: string) {
-  await respondToRecommendation(recommendationId, currentUserId, "dismissed");
+  const recommendation = await getRespondableRecommendation(recommendationId, currentUserId);
+
+  await prisma.albumRecommendation.update({
+    where: { id: recommendation.id },
+    data: { status: "dismissed", respondedAt: new Date() },
+  });
 }
 
-async function respondToRecommendation(
-  recommendationId: string,
-  currentUserId: string,
-  status: "accepted" | "dismissed",
-) {
+async function getRespondableRecommendation(recommendationId: string, currentUserId: string) {
   const recommendation = await prisma.albumRecommendation.findUnique({
     where: { id: recommendationId },
   });
@@ -210,8 +236,5 @@ async function respondToRecommendation(
     throw new RecommendationForbiddenError();
   }
 
-  await prisma.albumRecommendation.update({
-    where: { id: recommendationId },
-    data: { status, respondedAt: new Date() },
-  });
+  return recommendation;
 }
