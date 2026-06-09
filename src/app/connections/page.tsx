@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Search, UserPlus, UsersRound, X } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
@@ -81,14 +82,24 @@ function ConnectionRow({
           </>
         )}
         {variant !== "incoming" && (
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={() => onAction(connection.id, "remove")}
-            className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white/58 transition hover:bg-white/10 disabled:opacity-60"
-          >
-            {variant === "accepted" ? "Remover" : "Cancelar"}
-          </button>
+          <>
+            {variant === "accepted" && (
+              <Link
+                href={`/users/${connection.user.handle}`}
+                className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white/68 transition hover:bg-white/10"
+              >
+                Ver perfil
+              </Link>
+            )}
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => onAction(connection.id, "remove")}
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white/58 transition hover:bg-white/10 disabled:opacity-60"
+            >
+              {variant === "accepted" ? "Remover" : "Cancelar"}
+            </button>
+          </>
         )}
       </div>
     </div>

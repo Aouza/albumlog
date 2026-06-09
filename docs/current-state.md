@@ -26,6 +26,9 @@ This document is the source of truth for what AlbumLog currently implements.
 - Connection request flow with pending, accepted, and declined states.
 - Connection endpoints for user search, request creation, listing, acceptance, decline, and removal.
 - Unique public user handles for connection search and future public profile URLs.
+- User profile page at `/users/[handle]`.
+- Basic public profile visibility for non-connected users.
+- Albums in common section for accepted connections.
 - Library/dashboard data sourced from AlbumLog persisted Spotify imports.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
@@ -55,7 +58,6 @@ This document is the source of truth for what AlbumLog currently implements.
 - Rating persistence.
 - Review persistence.
 - Public profiles.
-- Albums in common.
 - Friend recommendations.
 - Feed.
 - Likes.

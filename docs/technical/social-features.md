@@ -72,9 +72,22 @@ The page supports:
 - seeing accepted connections;
 - seeing and canceling outgoing requests.
 
-## Next: Albums In Common
+## Implemented: Connected User Profile And Albums In Common
 
-Albums in common should compare `user_albums` for two connected users.
+User profiles are available by handle:
+
+```text
+/users/:handle
+```
+
+Behavior:
+
+- Any visitor can see basic public user information: name, avatar, and handle.
+- The current user's own profile is marked as `self`.
+- Accepted connections are marked as `connected`.
+- Non-connected users do not expose social library details.
+
+Albums in common compare `user_albums` for two connected users.
 
 Rules:
 
@@ -82,11 +95,13 @@ Rules:
 - Removed Spotify albums should be excluded by default.
 - The feature should return album metadata and basic ownership context for both users.
 
-Suggested endpoint:
+Endpoint:
 
 ```text
-GET /api/connections/:id/albums-in-common
+GET /api/users/:handle
 ```
+
+The endpoint returns `albumsInCommon` only when the relationship is `connected`.
 
 ## Next: Friend Recommendations
 
