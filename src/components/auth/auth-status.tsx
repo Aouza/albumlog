@@ -8,6 +8,7 @@ import { useState } from "react";
 
 type AuthUser = {
   id: string;
+  handle: string | null;
   name: string;
   email: string;
   avatarUrl: string;
@@ -94,6 +95,9 @@ export function AuthStatus() {
               Conectado via Spotify
             </p>
             <p className="mt-2 truncate text-sm font-semibold text-white">{user.name}</p>
+            {user.handle && (
+              <p className="mt-1 truncate text-xs font-semibold text-[#eef33f]">@{user.handle}</p>
+            )}
             <p className="mt-1 truncate text-xs text-white/45">{user.email || "Email nao informado"}</p>
             {!user.hasSpotifyLibraryScope && (
               <p className="mt-3 rounded-xl border border-[#eef33f]/20 bg-[#eef33f]/10 p-2 text-xs leading-5 text-[#eef33f]">

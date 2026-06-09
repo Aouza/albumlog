@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { readSessionToken } from "@/lib/auth/spotify";
+import { prisma } from "@/lib/db/prisma";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -17,12 +18,19 @@ export async function GET() {
     return NextResponse.json({ user: null });
   }
 
+  const persistedUser = await prisma.user.findUnique({
+    where: { spotifyUserId: user.id },
+    select: { id: true, handle: true, displayName: true, avatarUrl: true },
+  });
+
   return NextResponse.json({
     user: {
-      id: user.id,
-      name: user.name,
+      id: persistedUser?.id ?? user.id,
+      spotifyUserId: user.id,
+      handle: persistedUser?.handle ?? null,
+      name: persistedUser?.displayName ?? user.name,
       email: user.email,
-      avatarUrl: user.avatarUrl,
+      avatarUrl: persistedUser?.avatarUrl ?? user.avatarUrl,
       hasSpotifyLibraryScope: user.spotifyScope?.split(" ").includes("user-library-read") ?? false,
     },
   });

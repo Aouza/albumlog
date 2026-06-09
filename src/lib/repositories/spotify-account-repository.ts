@@ -20,6 +20,25 @@ async function createUniqueHandle(displayName: string) {
   return handle;
 }
 
+function isLegacyBackfillHandle(handle: string) {
+  return handle.startsWith("cm") || handle.startsWith("demo-user-");
+}
+
+async function ensureFriendlyHandle(user: { id: string; handle: string; displayName: string }) {
+  if (!isLegacyBackfillHandle(user.handle)) {
+    return user.handle;
+  }
+
+  const handle = await createUniqueHandle(user.displayName);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { handle },
+  });
+
+  return handle;
+}
+
 export async function upsertSpotifyAccount({
   profile,
   token,
@@ -42,6 +61,7 @@ export async function upsertSpotifyAccount({
       avatarUrl: profile.avatarUrl,
     },
   });
+  const handle = await ensureFriendlyHandle(user);
 
   await prisma.spotifyAccount.upsert({
     where: { userId: user.id },
@@ -71,5 +91,5 @@ export async function upsertSpotifyAccount({
     },
   });
 
-  return user;
+  return { ...user, handle };
 }

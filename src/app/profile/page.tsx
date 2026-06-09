@@ -11,6 +11,8 @@ import { useLibrary } from "@/lib/queries/albums";
 
 type AuthUser = {
   id: string;
+  spotifyUserId?: string;
+  handle: string | null;
   name: string;
   email: string;
   avatarUrl: string;
@@ -89,6 +91,9 @@ function ProfileContent() {
               )}
             </div>
             <p className="mt-1 text-white/52">{profile.email || "Email nao informado pelo Spotify"}</p>
+            {profile.handle && (
+              <p className="mt-1 text-sm font-semibold text-[#eef33f]">@{profile.handle}</p>
+            )}
             <p className="mt-2 text-sm text-white/42">Perfil autenticado pelo Spotify</p>
             {!profile.hasSpotifyLibraryScope && (
               <p className="mt-3 rounded-xl border border-[#eef33f]/20 bg-[#eef33f]/10 p-3 text-sm text-[#eef33f]">
