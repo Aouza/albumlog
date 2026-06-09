@@ -58,7 +58,7 @@ export async function POST() {
       error: error instanceof Error ? error.message : "Unknown error",
     });
 
-    const safeError = getSpotifySyncErrorResponse();
+    const safeError = getSpotifySyncErrorResponse(error);
 
     return NextResponse.json(safeError.body, { status: safeError.status });
   }

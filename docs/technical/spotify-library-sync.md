@@ -52,11 +52,15 @@ Implemented:
 - manual full sync reconciliation for Spotify-sourced albums removed from the user's saved Spotify albums.
 - safe sync error responses for the client, with server-side logging for investigation.
 - Prisma config loads `.env.local` for local development and prefers `DIRECT_URL` for CLI database operations.
+- concurrent manual sync protection per user, backed by a Postgres partial unique index for `status = 'syncing'`.
+- batch persistence for manual sync imports to reduce per-album database round trips.
 
 Not implemented yet:
 
 - automatic six-hour sync;
 - scheduled background sync;
+- live progress updates while a foreground sync is running;
+- queue/worker retries and backoff;
 - friends and recommendations.
 
 ## Recommended Data Model
@@ -229,6 +233,15 @@ Current implementation:
 - `POST /api/spotify/sync` runs a foreground manual full sync for the logged-in user.
 - `GET /api/spotify/sync/status` returns the latest sync run for the logged-in user.
 - The Library page displays the latest finished sync time, imported count, removed count, and a safe failure message.
+- A user cannot start two Spotify library syncs at the same time.
+- Album and user-album persistence is batched for the sync snapshot instead of upserting each album independently.
+
+Deferred performance work:
+
+- move long-running syncs to a background job before opening the product to many users;
+- expose progress updates instead of waiting for the request to finish;
+- add retry/backoff handling for Spotify rate limits and transient database failures;
+- periodically refresh metadata for already-known albums if Spotify changes title, cover, release data, or links.
 
 ## Full Sync and Removals
 

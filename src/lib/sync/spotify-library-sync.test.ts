@@ -3,7 +3,9 @@ import { syncSpotifyLibrary } from "./spotify-library-sync";
 
 describe("syncSpotifyLibrary", () => {
   it("imports every fetched saved album for the user", async () => {
-    const upsertEntry = vi.fn().mockResolvedValue(undefined);
+    const persistEntries = vi
+      .fn()
+      .mockResolvedValue({ totalImported: 1, totalUpdated: 0 });
 
     const result = await syncSpotifyLibrary({
       userId: "user-id",
@@ -33,7 +35,7 @@ describe("syncSpotifyLibrary", () => {
           },
         },
       ],
-      upsertEntry,
+      persistEntries,
       markRemovedEntries: async () => 0,
       createSyncRecord: async () => "sync-id",
       finishSyncRecord: async () => undefined,
@@ -41,7 +43,15 @@ describe("syncSpotifyLibrary", () => {
     });
 
     expect(result).toEqual({ totalImported: 1, totalUpdated: 0, totalMarkedRemoved: 0 });
-    expect(upsertEntry).toHaveBeenCalledTimes(1);
+    expect(persistEntries).toHaveBeenCalledTimes(1);
+    expect(persistEntries).toHaveBeenCalledWith(
+      "user-id",
+      expect.arrayContaining([
+        expect.objectContaining({
+          album: expect.objectContaining({ spotifyId: "spotify-album" }),
+        }),
+      ]),
+    );
   });
 
   it("marks persisted Spotify albums as removed when Spotify no longer returns them", async () => {
@@ -75,7 +85,7 @@ describe("syncSpotifyLibrary", () => {
           },
         },
       ],
-      upsertEntry: async () => undefined,
+      persistEntries: async () => ({ totalImported: 1, totalUpdated: 0 }),
       markRemovedEntries,
       createSyncRecord: async () => "sync-id",
       finishSyncRecord: async () => undefined,

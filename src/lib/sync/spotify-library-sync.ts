@@ -1,4 +1,5 @@
 import type { LibraryEntry } from "@/types/album";
+import { SyncAlreadyRunningError, isUniqueConstraintError } from "./spotify-sync-errors";
 
 export type SyncSummary = {
   totalImported: number;
@@ -6,11 +7,13 @@ export type SyncSummary = {
   totalMarkedRemoved: number;
 };
 
+type PersistenceSummary = Pick<SyncSummary, "totalImported" | "totalUpdated">;
+
 type SyncDependencies = {
   userId: string;
   accessToken: string;
   fetchSavedAlbums?: (accessToken: string) => Promise<LibraryEntry[]>;
-  upsertEntry?: (userId: string, entry: LibraryEntry) => Promise<void>;
+  persistEntries?: (userId: string, entries: LibraryEntry[]) => Promise<PersistenceSummary>;
   markRemovedEntries?: (userId: string, currentSpotifyAlbumIds: Set<string>) => Promise<number>;
   createSyncRecord?: () => Promise<string>;
   finishSyncRecord?: (syncId: string, summary: SyncSummary) => Promise<void>;
@@ -25,10 +28,10 @@ export async function syncSpotifyLibrary({
 
     return fetchSavedAlbums(token);
   },
-  upsertEntry = async (nextUserId, entry) => {
-    const { upsertSyncedLibraryEntry } = await import("@/lib/repositories/library-repository");
+  persistEntries = async (nextUserId, entries) => {
+    const { persistSyncedLibraryEntries } = await import("@/lib/repositories/library-repository");
 
-    return upsertSyncedLibraryEntry(nextUserId, entry);
+    return persistSyncedLibraryEntries(nextUserId, entries);
   },
   markRemovedEntries = async (nextUserId, currentSpotifyAlbumIds) => {
     const { markMissingSpotifyLibraryEntriesAsRemoved } = await import(
@@ -39,9 +42,26 @@ export async function syncSpotifyLibrary({
   },
   createSyncRecord = async () => {
     const { prisma } = await import("@/lib/db/prisma");
-    const sync = await prisma.spotifyLibrarySync.create({
-      data: { userId, status: "syncing", syncType: "manual_full" },
+    const activeSync = await prisma.spotifyLibrarySync.findFirst({
+      where: { userId, status: "syncing" },
+      select: { id: true },
     });
+
+    if (activeSync) {
+      throw new SyncAlreadyRunningError();
+    }
+
+    const sync = await prisma.spotifyLibrarySync
+      .create({
+        data: { userId, status: "syncing", syncType: "manual_full" },
+      })
+      .catch((error) => {
+        if (isUniqueConstraintError(error)) {
+          throw new SyncAlreadyRunningError();
+        }
+
+        throw error;
+      });
 
     return sync.id;
   },
@@ -74,17 +94,14 @@ export async function syncSpotifyLibrary({
 
   try {
     const albums = await fetchSavedAlbums(accessToken);
-
-    for (const entry of albums) {
-      await upsertEntry(userId, entry);
-    }
+    const persistenceSummary = await persistEntries(userId, albums);
 
     const currentSpotifyAlbumIds = new Set(albums.map((entry) => entry.album.spotifyId));
     const totalMarkedRemoved = await markRemovedEntries(userId, currentSpotifyAlbumIds);
 
     const summary = {
-      totalImported: albums.length,
-      totalUpdated: 0,
+      totalImported: persistenceSummary.totalImported,
+      totalUpdated: persistenceSummary.totalUpdated,
       totalMarkedRemoved,
     };
 
