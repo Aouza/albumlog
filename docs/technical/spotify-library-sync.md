@@ -48,7 +48,9 @@ Implemented:
 - `/api/spotify/sync/status` endpoint for the latest sync run.
 - Library button for `Atualizar Spotify`.
 - Library sync status summary with latest run time, imported count, and removed count.
-- `/api/spotify/saved-albums` reads persisted library rows first and falls back to live Spotify data for unsynced users.
+- `/api/spotify/saved-albums` reads persisted AlbumLog library rows only.
+- first Spotify connection triggers an initial full sync from the Library page after OAuth completes.
+- later Spotify reconnections trigger an incremental sync from the Library page.
 - manual full sync reconciliation for Spotify-sourced albums removed from the user's saved Spotify albums.
 - safe sync error responses for the client, with server-side logging for investigation.
 - Prisma config loads `.env.local` for local development and prefers `DIRECT_URL` for CLI database operations.
@@ -197,11 +199,10 @@ Incremental sync is useful for recently added albums.
 
 Suggested strategy:
 
-1. When the user opens the app, check `last_synced_at`.
-2. If the last sync is older than a configured threshold, run a lightweight sync.
-3. Fetch saved albums ordered by Spotify's default saved-library order.
-4. Continue page by page until finding albums already known for that user.
-5. Upsert new albums and update `last_synced_at`.
+1. Read the latest `user_albums.spotify_saved_at` for the user.
+2. Fetch saved albums ordered by Spotify's default saved-library order.
+3. Continue page by page until finding an album with `added_at` older than or equal to the latest known `spotify_saved_at`.
+4. Upsert new albums and update `last_synced_at`.
 
 Recommended MVP threshold:
 
@@ -231,10 +232,14 @@ For MVP, the button can trigger a foreground sync for the current user. Later, t
 Current implementation:
 
 - `POST /api/spotify/sync` runs a foreground manual full sync for the logged-in user.
+- `POST /api/spotify/sync` also accepts `syncType = initial_full | manual_full | incremental`.
 - `GET /api/spotify/sync/status` returns the latest sync run for the logged-in user.
 - The Library page displays the latest finished sync time, imported count, removed count, and a safe failure message.
 - A user cannot start two Spotify library syncs at the same time.
 - Album and user-album persistence is batched for the sync snapshot instead of upserting each album independently.
+- After a first Spotify connection, OAuth redirects to `/library?initialSync=spotify` and the client starts `initial_full`.
+- After later Spotify reconnections, OAuth redirects to `/library?incrementalSync=spotify` and the client starts `incremental`.
+- The Library reads AlbumLog database records only; Spotify is no longer used as a live fallback for library reads.
 
 Deferred performance work:
 

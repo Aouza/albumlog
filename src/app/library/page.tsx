@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, Clock3, Library } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AlbumCard } from "@/components/album/album-card";
 import { LibraryFilters } from "@/components/library/library-filters";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -16,11 +16,34 @@ export default function LibraryPage() {
   const syncSpotifyLibrary = useSyncSpotifyLibrary();
   const spotifySyncStatus = useSpotifySyncStatus();
   const latestSync = spotifySyncStatus.data?.sync;
+  const didStartInitialSync = useRef(false);
+  const isSyncing = syncSpotifyLibrary.isPending || latestSync?.status === "syncing";
   const hasActiveFilters = filters.status !== "all" || Boolean(filters.query.trim());
   const emptyStateCopy = getLibraryEmptyStateCopy({
     hasAnySavedAlbums: Boolean(fullLibrary.data?.length),
     hasActiveFilters,
   });
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    const shouldRunInitialSync = searchParams.get("initialSync") === "spotify" && !latestSync;
+    const shouldRunIncrementalSync = searchParams.get("incrementalSync") === "spotify";
+
+    if (didStartInitialSync.current || syncSpotifyLibrary.isPending) {
+      return;
+    }
+
+    if (!shouldRunInitialSync && !shouldRunIncrementalSync) {
+      return;
+    }
+
+    didStartInitialSync.current = true;
+    syncSpotifyLibrary.mutate({
+      syncType: shouldRunIncrementalSync ? "incremental" : "initial_full",
+    });
+    window.history.replaceState(null, "", window.location.pathname);
+  }, [latestSync, syncSpotifyLibrary]);
 
   return (
     <div className="space-y-5">
@@ -35,11 +58,11 @@ export default function LibraryPage() {
           </div>
           <button
             type="button"
-            onClick={() => syncSpotifyLibrary.mutate()}
-            disabled={syncSpotifyLibrary.isPending}
+            onClick={() => syncSpotifyLibrary.mutate({})}
+            disabled={isSyncing}
             className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm font-semibold text-white/72 transition hover:bg-white/10 disabled:cursor-wait disabled:opacity-60"
           >
-            {syncSpotifyLibrary.isPending ? "Atualizando..." : "Atualizar Spotify"}
+            {isSyncing ? "Atualizando..." : "Atualizar Spotify"}
           </button>
         </div>
         {syncSpotifyLibrary.isError && (
@@ -50,7 +73,9 @@ export default function LibraryPage() {
         <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 md:grid-cols-3">
           <div className="flex items-center gap-3">
             <div className="flex size-9 items-center justify-center rounded-xl bg-white/[0.04] text-white/62">
-              {latestSync?.status === "failed" ? (
+              {isSyncing ? (
+                <Clock3 className="size-4 text-[#eef33f]" />
+              ) : latestSync?.status === "failed" ? (
                 <AlertCircle className="size-4 text-red-200" />
               ) : latestSync ? (
                 <CheckCircle2 className="size-4 text-[#eef33f]" />
@@ -66,6 +91,8 @@ export default function LibraryPage() {
                       dateStyle: "short",
                       timeStyle: "short",
                     })
+                  : isSyncing
+                    ? "Sincronizando agora"
                   : "Ainda nao sincronizado"}
               </p>
             </div>

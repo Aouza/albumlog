@@ -7,12 +7,17 @@ export type SyncSummary = {
   totalMarkedRemoved: number;
 };
 
+export type SpotifyLibrarySyncType = "initial_full" | "manual_full" | "incremental";
+
 type PersistenceSummary = Pick<SyncSummary, "totalImported" | "totalUpdated">;
 
 type SyncDependencies = {
   userId: string;
   accessToken: string;
+  syncType?: SpotifyLibrarySyncType;
+  since?: Date | null;
   fetchSavedAlbums?: (accessToken: string) => Promise<LibraryEntry[]>;
+  fetchSavedAlbumsSince?: (accessToken: string, since: Date) => Promise<LibraryEntry[]>;
   persistEntries?: (userId: string, entries: LibraryEntry[]) => Promise<PersistenceSummary>;
   markRemovedEntries?: (userId: string, currentSpotifyAlbumIds: Set<string>) => Promise<number>;
   createSyncRecord?: () => Promise<string>;
@@ -23,10 +28,17 @@ type SyncDependencies = {
 export async function syncSpotifyLibrary({
   userId,
   accessToken,
+  syncType = "manual_full",
+  since = null,
   fetchSavedAlbums = async (token) => {
     const { fetchSavedAlbums } = await import("@/lib/spotify/albums");
 
     return fetchSavedAlbums(token);
+  },
+  fetchSavedAlbumsSince = async (token, savedAfter) => {
+    const { fetchSavedAlbumsSince } = await import("@/lib/spotify/albums");
+
+    return fetchSavedAlbumsSince(token, savedAfter);
   },
   persistEntries = async (nextUserId, entries) => {
     const { persistSyncedLibraryEntries } = await import("@/lib/repositories/library-repository");
@@ -53,7 +65,7 @@ export async function syncSpotifyLibrary({
 
     const sync = await prisma.spotifyLibrarySync
       .create({
-        data: { userId, status: "syncing", syncType: "manual_full" },
+        data: { userId, status: "syncing", syncType },
       })
       .catch((error) => {
         if (isUniqueConstraintError(error)) {
@@ -74,7 +86,7 @@ export async function syncSpotifyLibrary({
         status: "idle",
         finishedAt: new Date(),
         lastSyncedAt: new Date(),
-        lastFullSyncedAt: new Date(),
+        lastFullSyncedAt: syncType === "incremental" ? undefined : new Date(),
         totalImported: summary.totalImported,
         totalUpdated: summary.totalUpdated,
         totalMarkedRemoved: summary.totalMarkedRemoved,
@@ -93,11 +105,16 @@ export async function syncSpotifyLibrary({
   const syncId = await createSyncRecord();
 
   try {
-    const albums = await fetchSavedAlbums(accessToken);
+    const albums =
+      syncType === "incremental" && since
+        ? await fetchSavedAlbumsSince(accessToken, since)
+        : await fetchSavedAlbums(accessToken);
     const persistenceSummary = await persistEntries(userId, albums);
 
-    const currentSpotifyAlbumIds = new Set(albums.map((entry) => entry.album.spotifyId));
-    const totalMarkedRemoved = await markRemovedEntries(userId, currentSpotifyAlbumIds);
+    const totalMarkedRemoved =
+      syncType === "incremental"
+        ? 0
+        : await markRemovedEntries(userId, new Set(albums.map((entry) => entry.album.spotifyId)));
 
     const summary = {
       totalImported: persistenceSummary.totalImported,

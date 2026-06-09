@@ -8,6 +8,7 @@ import {
   readOAuthState,
 } from "@/lib/auth/spotify";
 import { upsertSpotifyAccount } from "@/lib/repositories/spotify-account-repository";
+import { hasSpotifyLibrarySync } from "@/lib/repositories/spotify-sync-repository";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -34,11 +35,12 @@ export async function GET(request: NextRequest) {
       redirectUri,
     });
     const profile = await fetchSpotifyProfile(token.access_token);
-    await upsertSpotifyAccount({
+    const user = await upsertSpotifyAccount({
       profile,
       token,
       tokenEncryptionSecret: getRequiredEnv("TOKEN_ENCRYPTION_SECRET"),
     });
+    const hasSyncedLibrary = await hasSpotifyLibrarySync(user.id);
     const sessionToken = await createSessionToken(
       {
         ...profile,
@@ -50,7 +52,12 @@ export async function GET(request: NextRequest) {
       sessionSecret,
     );
 
-    const response = NextResponse.redirect(new URL("/profile?login=spotify", appOrigin));
+    const response = NextResponse.redirect(
+      new URL(
+        hasSyncedLibrary ? "/library?incrementalSync=spotify" : "/library?initialSync=spotify",
+        appOrigin,
+      ),
+    );
 
     response.cookies.set("albumlog_session", sessionToken, {
       httpOnly: true,

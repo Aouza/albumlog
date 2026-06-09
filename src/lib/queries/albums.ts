@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LibraryFilters, UpdateUserAlbumInput } from "@/types/album";
 import type { SpotifySyncStatus } from "@/lib/sync/spotify-sync-status";
+import type { SpotifyLibrarySyncType } from "@/lib/sync/spotify-library-sync";
 import {
   getAlbumDetail,
   getDashboardStats,
@@ -69,6 +70,7 @@ export function useSpotifySyncStatus() {
 
       return (await response.json()) as { sync: SpotifySyncStatus | null };
     },
+    refetchInterval: (query) => (query.state.data?.sync?.status === "syncing" ? 2_000 : false),
   });
 }
 
@@ -90,8 +92,12 @@ export function useSyncSpotifyLibrary() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/spotify/sync", { method: "POST" });
+    mutationFn: async (input?: { syncType?: SpotifyLibrarySyncType }) => {
+      const response = await fetch("/api/spotify/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input ?? {}),
+      });
 
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { message?: string } | null;

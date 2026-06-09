@@ -15,7 +15,7 @@ describe("album empty state copy", () => {
     });
   });
 
-  it("uses the Spotify connection empty state when there are no saved albums at all", () => {
+  it("uses the Spotify sync empty state when there are no saved albums at all", () => {
     expect(
       getLibraryEmptyStateCopy({
         hasAnySavedAlbums: false,
@@ -23,8 +23,8 @@ describe("album empty state copy", () => {
       }),
     ).toEqual({
       title: "Sua biblioteca ainda esta vazia",
-      description: "Entre com Spotify ou reconecte sua conta para autorizar a leitura dos albuns salvos.",
-      action: { href: "/login", label: "Entrar com Spotify" },
+      description: "Atualize sua biblioteca Spotify para importar seus albuns salvos para o AlbumLog.",
+      action: undefined,
     });
   });
 

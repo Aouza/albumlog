@@ -21,3 +21,26 @@ export async function getLatestSpotifyLibrarySyncStatus(userId: string) {
 
   return mapSpotifySyncStatus(sync);
 }
+
+export async function hasSpotifyLibrarySync(userId: string) {
+  const sync = await prisma.spotifyLibrarySync.findFirst({
+    where: { userId },
+    select: { id: true },
+  });
+
+  return Boolean(sync);
+}
+
+export async function getLatestSpotifySavedAlbumDate(userId: string) {
+  const latestAlbum = await prisma.userAlbum.findFirst({
+    where: {
+      userId,
+      source: "spotify",
+      spotifySavedAt: { not: null },
+    },
+    orderBy: { spotifySavedAt: "desc" },
+    select: { spotifySavedAt: true },
+  });
+
+  return latestAlbum?.spotifySavedAt ?? null;
+}

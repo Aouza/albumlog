@@ -96,6 +96,52 @@ describe("syncSpotifyLibrary", () => {
     expect(result.totalMarkedRemoved).toBe(2);
   });
 
+  it("runs incremental sync without marking removed albums", async () => {
+    const markRemovedEntries = vi.fn().mockResolvedValue(0);
+    const fetchSavedAlbumsSince = vi.fn().mockResolvedValue([]);
+
+    const result = await syncSpotifyLibrary({
+      userId: "user-id",
+      accessToken: "access-token",
+      syncType: "incremental",
+      since: new Date("2026-06-09T10:00:00Z"),
+      fetchSavedAlbumsSince,
+      persistEntries: async () => ({ totalImported: 0, totalUpdated: 0 }),
+      markRemovedEntries,
+      createSyncRecord: async () => "sync-id",
+      finishSyncRecord: async () => undefined,
+      failSyncRecord: async () => undefined,
+    });
+
+    expect(fetchSavedAlbumsSince).toHaveBeenCalledWith(
+      "access-token",
+      new Date("2026-06-09T10:00:00Z"),
+    );
+    expect(markRemovedEntries).not.toHaveBeenCalled();
+    expect(result).toEqual({ totalImported: 0, totalUpdated: 0, totalMarkedRemoved: 0 });
+  });
+
+  it("falls back to a full fetch when incremental sync has no known saved date", async () => {
+    const fetchSavedAlbums = vi.fn().mockResolvedValue([]);
+    const fetchSavedAlbumsSince = vi.fn().mockResolvedValue([]);
+
+    await syncSpotifyLibrary({
+      userId: "user-id",
+      accessToken: "access-token",
+      syncType: "incremental",
+      fetchSavedAlbums,
+      fetchSavedAlbumsSince,
+      persistEntries: async () => ({ totalImported: 0, totalUpdated: 0 }),
+      markRemovedEntries: async () => 0,
+      createSyncRecord: async () => "sync-id",
+      finishSyncRecord: async () => undefined,
+      failSyncRecord: async () => undefined,
+    });
+
+    expect(fetchSavedAlbums).toHaveBeenCalledWith("access-token");
+    expect(fetchSavedAlbumsSince).not.toHaveBeenCalled();
+  });
+
   it("records failed sync runs before rethrowing", async () => {
     const error = new Error("Spotify unavailable");
     const failSyncRecord = vi.fn().mockResolvedValue(undefined);

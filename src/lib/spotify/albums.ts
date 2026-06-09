@@ -49,29 +49,60 @@ export function mapSpotifySavedAlbum(savedAlbum: SpotifySavedAlbum): LibraryEntr
   };
 }
 
-export async function fetchSavedAlbums(accessToken: string, limit = 50) {
+async function fetchSavedAlbumsPage(nextUrl: string, accessToken: string) {
+  const response = await fetch(nextUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Spotify saved albums request failed");
+  }
+
+  return (await response.json()) as SpotifySavedAlbumsResponse;
+}
+
+function buildSavedAlbumsUrl(limit: number) {
   const firstPageUrl = new URL("https://api.spotify.com/v1/me/albums");
-  const albums: LibraryEntry[] = [];
-  let nextUrl: string | null = firstPageUrl.toString();
 
   firstPageUrl.searchParams.set("limit", String(limit));
-  nextUrl = firstPageUrl.toString();
+
+  return firstPageUrl.toString();
+}
+
+export async function fetchSavedAlbums(accessToken: string, limit = 50) {
+  const albums: LibraryEntry[] = [];
+  let nextUrl: string | null = buildSavedAlbumsUrl(limit);
 
   while (nextUrl) {
-    const response = await fetch(nextUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Spotify saved albums request failed");
-    }
-
-    const payload = (await response.json()) as SpotifySavedAlbumsResponse;
+    const payload = await fetchSavedAlbumsPage(nextUrl, accessToken);
 
     albums.push(...payload.items.map(mapSpotifySavedAlbum));
     nextUrl = payload.next;
+  }
+
+  return albums;
+}
+
+export async function fetchSavedAlbumsSince(accessToken: string, since: Date, limit = 50) {
+  const albums: LibraryEntry[] = [];
+  let nextUrl: string | null = buildSavedAlbumsUrl(limit);
+  let shouldContinue = true;
+
+  while (nextUrl && shouldContinue) {
+    const payload = await fetchSavedAlbumsPage(nextUrl, accessToken);
+
+    for (const item of payload.items) {
+      if (new Date(item.added_at) <= since) {
+        shouldContinue = false;
+        break;
+      }
+
+      albums.push(mapSpotifySavedAlbum(item));
+    }
+
+    nextUrl = shouldContinue ? payload.next : null;
   }
 
   return albums;

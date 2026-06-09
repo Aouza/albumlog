@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchSavedAlbums, mapSpotifySavedAlbum } from "./albums";
+import { fetchSavedAlbums, fetchSavedAlbumsSince, mapSpotifySavedAlbum } from "./albums";
 
 describe("Spotify saved albums mapper", () => {
   afterEach(() => {
@@ -86,5 +86,45 @@ describe("Spotify saved albums mapper", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("limit=50");
     expect(fetchMock.mock.calls[1]?.[0]).toBe("https://api.spotify.com/v1/me/albums?offset=50&limit=50");
+  });
+
+  it("loads only albums saved after the known Spotify saved date", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      Response.json({
+        items: [
+          {
+            added_at: "2026-06-09T14:00:00Z",
+            album: {
+              id: "new-album",
+              name: "New Album",
+              artists: [{ name: "Artist" }],
+              images: [],
+              release_date: "2026",
+              external_urls: {},
+              genres: [],
+            },
+          },
+          {
+            added_at: "2026-06-09T09:00:00Z",
+            album: {
+              id: "known-album",
+              name: "Known Album",
+              artists: [{ name: "Artist" }],
+              images: [],
+              release_date: "2026",
+              external_urls: {},
+              genres: [],
+            },
+          },
+        ],
+        next: "https://api.spotify.com/v1/me/albums?offset=50&limit=50",
+        total: 2,
+      }),
+    );
+
+    await expect(
+      fetchSavedAlbumsSince("access-token", new Date("2026-06-09T10:00:00Z")),
+    ).resolves.toMatchObject([{ album: { id: "new-album" } }]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

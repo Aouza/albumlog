@@ -7,10 +7,15 @@ import {
   refreshSpotifyToken,
 } from "@/lib/auth/spotify";
 import { prisma } from "@/lib/db/prisma";
+import { getLatestSpotifySavedAlbumDate } from "@/lib/repositories/spotify-sync-repository";
 import { getSpotifySyncErrorResponse } from "@/lib/sync/spotify-sync-errors";
-import { syncSpotifyLibrary } from "@/lib/sync/spotify-library-sync";
+import { type SpotifyLibrarySyncType, syncSpotifyLibrary } from "@/lib/sync/spotify-library-sync";
 
-export async function POST() {
+function isSpotifyLibrarySyncType(value: unknown): value is SpotifyLibrarySyncType {
+  return value === "initial_full" || value === "manual_full" || value === "incremental";
+}
+
+export async function POST(request: Request) {
   const cookieStore = await cookies();
   const sessionSecret = getRequiredEnv("AUTH_SESSION_SECRET");
   const session = await readSessionToken(cookieStore.get("albumlog_session")?.value, sessionSecret);
@@ -27,6 +32,10 @@ export async function POST() {
 
   let accessToken = session.spotifyAccessToken;
   let nextSession = session;
+  const body = (await request.json().catch(() => ({}))) as { syncType?: unknown };
+  const syncType = isSpotifyLibrarySyncType(body.syncType) ? body.syncType : "manual_full";
+  const since =
+    syncType === "incremental" ? await getLatestSpotifySavedAlbumDate(user.id) : null;
 
   if (session.spotifyRefreshToken && (session.spotifyTokenExpiresAt ?? 0) <= Date.now() + 60_000) {
     const refreshed = await refreshSpotifyToken({
@@ -51,6 +60,8 @@ export async function POST() {
     summary = await syncSpotifyLibrary({
       userId: user.id,
       accessToken,
+      syncType,
+      since,
     });
   } catch (error) {
     console.error("[spotify-sync] manual sync failed", {

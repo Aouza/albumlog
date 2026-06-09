@@ -23,8 +23,7 @@ export function getLibraryEmptyStateCopy({
 
   return {
     title: "Sua biblioteca ainda esta vazia",
-    description: "Entre com Spotify ou reconecte sua conta para autorizar a leitura dos albuns salvos.",
-    action: { href: "/login", label: "Entrar com Spotify" },
+    description: "Atualize sua biblioteca Spotify para importar seus albuns salvos para o AlbumLog.",
   };
 }
 

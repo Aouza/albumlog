@@ -22,13 +22,16 @@ This document is the source of truth for what AlbumLog currently implements.
 - Manual Spotify library sync endpoint at `/api/spotify/sync`.
 - Spotify library sync status endpoint at `/api/spotify/sync/status`.
 - Discover page at `/discover` with Spotify catalog search and friend recommendations empty state.
-- Library/dashboard data sourced from AlbumLog persisted Spotify imports when available, with live Spotify fallback for unsynced users.
+- Library/dashboard data sourced from AlbumLog persisted Spotify imports.
 - Prisma schema and initial Supabase migration for users, Spotify accounts, albums, user albums, and sync runs.
 - Spotify account persistence with encrypted token storage.
 - Manual Spotify sync marks Spotify-sourced albums as removed when they no longer appear in the user's saved Spotify albums.
 - Library page shows the latest Spotify sync status, imported count, removed count, and safe sync errors.
 - Manual Spotify sync blocks concurrent syncs for the same user.
 - Manual Spotify sync persists album snapshots in batches to reduce database round trips.
+- First Spotify connection redirects to Library and starts an initial full sync.
+- Later Spotify reconnections redirect to Library and start an incremental sync based on the latest `spotifySavedAt` stored in AlbumLog.
+- Library/dashboard reads are database-backed; Spotify is used as an import/sync source, not as the live library source.
 - Token refresh for Spotify API calls when the session has a refresh token.
 - Empty states for:
   - Dashboard activity.
@@ -62,11 +65,12 @@ This document is the source of truth for what AlbumLog currently implements.
 
 - Authentication data comes from Spotify after login.
 - Spotify account records are persisted in Supabase Postgres after login.
-- Saved albums come from Spotify's `/v1/me/albums` endpoint.
+- Saved albums are imported from Spotify's `/v1/me/albums` endpoint during sync.
 - Manual sync imports saved Spotify albums into AlbumLog tables and marks missing Spotify-sourced rows as `removedFromSpotify`.
 - Manual sync cannot run twice at the same time for the same user.
+- Incremental sync imports only albums with Spotify `added_at` newer than the latest `UserAlbum.spotifySavedAt` already stored for the user.
 - Discover catalog search uses Spotify's `/v1/search` endpoint for album results.
-- Library reads persisted AlbumLog entries when sync data exists, otherwise falls back to live saved Spotify albums.
+- Library reads persisted AlbumLog entries only.
 - Dashboard stats are derived from the saved albums currently loaded.
 - Ratings, reviews, and AlbumLog-specific status are not persisted yet.
 
